@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { StyleSheet, css } from 'aphrodite';
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
+      <div className={css(styles.app)}>
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <p>
             Edit <code>src/App.js</code> and save to reload.
           </p>
@@ -24,5 +22,11 @@ class App extends Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  app: {
+    background: 'red'
+  }
+});
 
 export default App;
