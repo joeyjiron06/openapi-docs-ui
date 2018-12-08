@@ -21,7 +21,7 @@ const Sidebar = ({ paths, title }) => (
     <div className={css(styles.listItem, styles.pathSummary)}>Overview</div>
 
     <div>
-      {...Object.keys(paths).map(pathName => {
+      {Object.keys(paths).map(pathName => {
         const pathItem = paths[pathName];
         return (
           <div key={pathName}>
