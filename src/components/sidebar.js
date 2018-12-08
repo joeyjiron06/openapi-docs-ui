@@ -13,9 +13,21 @@ const httpMethods = [
   'delete'
 ];
 
-const Sidebar = ({ paths, title }) => (
+const Sidebar = ({ sections }) => (
   <div className={css(styles.root)}>
-    <h2>{title}</h2>
+    {
+      <div>
+        {sections.map(({ title, items }, index) => (
+          <div key={index}>
+            <div>{title}</div>
+            {items.map(({ title }, index) => (
+              <div key={`${index}`}>{title}</div>
+            ))}
+          </div>
+        ))}
+      </div>
+    }
+    {/* <h2>{title}</h2>
 
     <div className={css(styles.listItem, styles.header)}>API</div>
     <div className={css(styles.listItem, styles.pathSummary)}>Overview</div>
@@ -47,13 +59,21 @@ const Sidebar = ({ paths, title }) => (
           </div>
         );
       })}
-    </div>
+    </div> */}
   </div>
 );
 
 Sidebar.propTypes = {
-  paths: PropTypes.object.isRequired,
-  title: PropTypes.string.isRequired
+  sections: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      items: PropTypes.arrayOf(
+        PropTypes.shape({
+          title: PropTypes.string.isRequired
+        })
+      ).isRequired
+    })
+  ).isRequired
 };
 
 const styles = StyleSheet.create({
