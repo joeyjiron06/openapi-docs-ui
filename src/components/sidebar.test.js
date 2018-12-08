@@ -5,14 +5,13 @@ import { StyleSheetTestUtils } from 'aphrodite/no-important';
 import 'jest-dom/extend-expect';
 import Sidebar from './sidebar';
 
-afterEach(cleanup);
-
-describe('Sidebar', () => {
+describe('<Sidebar />', () => {
   beforeEach(() => {
     StyleSheetTestUtils.suppressStyleInjection();
   });
   afterEach(() => {
     StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
+    cleanup();
   });
 
   const sections = [

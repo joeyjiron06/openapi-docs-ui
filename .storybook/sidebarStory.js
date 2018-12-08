@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import Sidebar from '../src/components/sidebar';
 
-storiesOf('Sidebar', module).add('with summaries', () => (
+storiesOf('Sidebar', module).add('default', () => (
   <Sidebar
     title="User API"
     version="6.0.2"
