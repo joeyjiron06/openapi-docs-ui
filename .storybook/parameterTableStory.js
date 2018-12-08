@@ -7,14 +7,30 @@ storiesOf('ParameterTable', module).add('default', () => (
     parameters={[
       {
         name: { title: 'email' },
-        type: [
-          {
-            title: 'string',
-            subtitles: [{ title: 'email', color: 'default' }],
-            headers: [{ title: 'exactly', color: 'default' }]
-          }
-        ],
+        type: {
+          subtitles: [{ title: 'email', color: 'default' }],
+          headers: [{ title: 'exactly', color: 'default' }],
+          titles: [{ title: 'string' }]
+        },
         description: 'This is a users email'
+      },
+      {
+        name: { title: 'User' },
+        type: {
+          titles: [
+            {
+              title: 'string'
+            },
+            {
+              title: 'User',
+              link: '/models/user'
+            },
+            {
+              title: 'Person',
+              link: '/models/person'
+            }
+          ]
+        }
       }
     ]}
   />

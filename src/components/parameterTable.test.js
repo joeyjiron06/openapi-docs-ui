@@ -18,7 +18,7 @@ describe('<ParameterTable />', () => {
     const parameters = [
       {
         name: { title: '' },
-        type: [{ title: '' }]
+        type: { titles: [{ title: '' }] }
       }
     ];
     const { getByText } = render(<ParameterTable parameters={parameters} />);
@@ -31,41 +31,48 @@ describe('<ParameterTable />', () => {
   it('should render the parameters with subtitles and headers', () => {
     const parameters = [
       {
-        name: { title: 'email' },
-        type: [
-          {
-            title: 'string',
-            subtitles: [{ title: 'email', color: 'default' }],
-            headers: [{ title: 'exactly', color: 'default' }]
-          }
-        ]
+        name: {
+          title: 'userEmail',
+          subtitles: [{ title: 'required', color: 'red' }]
+        },
+        type: {
+          titles: [{ title: 'string' }],
+          subtitles: [{ title: 'email', color: 'default' }],
+          headers: [{ title: 'exactly', color: 'default' }]
+        }
       }
     ];
 
-    const { getByText, getAllByTestId } = render(
-      <ParameterTable parameters={parameters} />
-    );
+    const { getByText } = render(<ParameterTable parameters={parameters} />);
 
     parameters.forEach(parameter => {
       expect(getByText(parameter.name.title)).toBeInTheDocument();
-      parameter.type.forEach(type => {
-        expect(getByText(type.title)).toBeInTheDocument();
 
-        getAllByTestId('type-header').forEach((el, index) => {
-          expect(el.textContent).toBe(type.headers[index].title);
-        });
+      parameter.name.subtitles.forEach(({ title }) => {
+        expect(getByText(title)).toBeInTheDocument();
+      });
 
-        getAllByTestId('type-subtitle').forEach((el, index) => {
-          expect(el.textContent).toBe(type.subtitles[index].title);
-        });
+      parameter.type.titles.forEach(({ title }) => {
+        expect(getByText(title)).toBeInTheDocument();
+      });
+
+      parameter.type.subtitles.forEach(({ title }) => {
+        expect(getByText(title)).toBeInTheDocument();
+      });
+
+      parameter.type.headers.forEach(({ title }) => {
+        expect(getByText(title)).toBeInTheDocument();
       });
     });
   });
+
   it('should render a simple text description', () => {
     const parameters = [
       {
         name: { title: 'email' },
-        type: [{ title: 'string' }],
+        type: {
+          titles: [{ title: 'string' }]
+        },
         description: 'This is the email of the user'
       }
     ];
@@ -76,11 +83,14 @@ describe('<ParameterTable />', () => {
       expect(getByText(parameter.description)).toBeInTheDocument();
     });
   });
+
   it('should render a markdown description', () => {
     const parameters = [
       {
         name: { title: 'email' },
-        type: [{ title: 'string' }],
+        type: {
+          titles: [{ title: 'string' }]
+        },
         description: `
           # Header1
           Some text here
@@ -108,19 +118,21 @@ describe('<ParameterTable />', () => {
     const parameters = [
       {
         name: { title: 'User' },
-        type: [
-          {
-            title: 'string'
-          },
-          {
-            title: 'User',
-            link: '/models/user'
-          },
-          {
-            title: 'Person',
-            link: '/models/person'
-          }
-        ]
+        type: {
+          titles: [
+            {
+              title: 'string'
+            },
+            {
+              title: 'User',
+              link: '/models/user'
+            },
+            {
+              title: 'Person',
+              link: '/models/person'
+            }
+          ]
+        }
       }
     ];
 

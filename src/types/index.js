@@ -5,15 +5,21 @@ export const ColoredTitleType = PropTypes.shape({
   color: PropTypes.oneOf(['red', 'yellow', 'green', 'default'])
 });
 
-export const ValueType = PropTypes.shape({
+export const LinkableType = PropTypes.shape({
   title: PropTypes.string.isRequired,
-  subtitles: PropTypes.arrayOf(ColoredTitleType),
-  headers: PropTypes.arrayOf(ColoredTitleType),
   link: PropTypes.string
 });
 
 export const ParameterType = PropTypes.shape({
-  name: ValueType.isRequired,
-  type: PropTypes.arrayOf(ValueType).isRequired,
+  name: PropTypes.shape({
+    headers: PropTypes.arrayOf(ColoredTitleType),
+    subtitles: PropTypes.arrayOf(ColoredTitleType),
+    title: PropTypes.string.isRequired
+  }).isRequired,
+  type: PropTypes.shape({
+    headers: PropTypes.arrayOf(ColoredTitleType),
+    subtitles: PropTypes.arrayOf(ColoredTitleType),
+    titles: PropTypes.arrayOf(LinkableType).isRequired
+  }).isRequired,
   description: PropTypes.string
 });
