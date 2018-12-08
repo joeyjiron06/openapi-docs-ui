@@ -51,7 +51,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#1B1C19',
     color: 'white',
     padding: 40,
-    maxWidth: 240
+    maxWidth: 240,
+    boxSizing: 'border-box',
+    minHeight: '100vh'
   },
   title: {
     fontSize: 24,
