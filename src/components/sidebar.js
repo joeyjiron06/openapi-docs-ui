@@ -2,8 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, css } from 'aphrodite/no-important';
 
-const Sidebar = ({ sections }) => (
+const Sidebar = ({ sections, title, version }) => (
   <div className={css(styles.root)}>
+    <div>
+      <span className={css(styles.title)}>{title}</span>
+      <span>{`v${version}`}</span>
+    </div>
+
     {
       <div>
         {sections.map(({ title, items }, index) => (
@@ -27,6 +32,8 @@ const Sidebar = ({ sections }) => (
 );
 
 Sidebar.propTypes = {
+  title: PropTypes.string.isRequired,
+  version: PropTypes.string.isRequired,
   sections: PropTypes.arrayOf(
     PropTypes.shape({
       title: PropTypes.string.isRequired,
@@ -46,8 +53,13 @@ const styles = StyleSheet.create({
     padding: 40,
     maxWidth: 240
   },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginRight: 10
+  },
   listItem: {
-    marginBottom: 30
+    marginBottom: 22
   },
   sectionTitle: {
     fontWeight: 'bold',

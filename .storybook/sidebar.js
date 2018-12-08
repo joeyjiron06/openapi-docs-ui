@@ -4,6 +4,8 @@ import Sidebar from '../src/components/sidebar';
 
 storiesOf('Sidebar', module).add('with summaries', () => (
   <Sidebar
+    title="User API"
+    version="6.0.2"
     sections={[
       { title: 'API', items: [{ title: 'Overview' }] },
       {
