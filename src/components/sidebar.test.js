@@ -204,86 +204,108 @@ describe('Sidebar', () => {
     expect(getByText(title)).toBeInTheDocument();
   });
 
-  it('should render the api overview', () => {
-    const { getByText } = render(<Sidebar title="" paths={{}} />);
-
-    expect(getByText('API')).toBeInTheDocument();
-    expect(getByText('Overview')).toBeInTheDocument();
-  });
-
-  it('should render the http method + pathname when no summary is given', () => {
-    const paths = {
-      '/pets/:id': {
-        get: {},
-        post: {},
-        delete: {}
+  it('should render the sections', () => {
+    const sections = [
+      { title: 'API', items: [{ title: 'Overview' }] },
+      {
+        title: 'Pets',
+        items: [
+          { title: 'Get all pets' },
+          { title: 'Post a pet' },
+          { title: 'Delete a pet' }
+        ]
       }
-    };
-    const { getByText } = render(<Sidebar title="" paths={paths} />);
+    ];
+    const { getByText } = render(<Sidebar title="" sections={sections} />);
 
-    expect(getByText('GET /pets/:id')).toBeInTheDocument();
-    expect(getByText('POST /pets/:id')).toBeInTheDocument();
-    expect(getByText('DELETE /pets/:id')).toBeInTheDocument();
+    sections.forEach(section => {
+      expect(getByText(section.title)).toBeInTheDocument();
+      sections.items.forEach(item => {
+        expect(getByText(item.title)).toBeInTheDocument();
+      });
+    });
   });
 
-  it('should render the open api paths with a summary', () => {
-    const paths = {
-      '/pets': {
-        summary: 'Pets',
-        get: {
-          summary: 'Get all pets'
-        },
-        put: {
-          summary: 'Put a pet'
-        },
-        options: {
-          summary: 'Options a pet'
-        },
-        head: {
-          summary: 'Head a pet'
-        },
-        patch: {
-          summary: 'Patch a pet'
-        },
-        trace: {
-          summary: 'Trace a pet'
-        },
-        post: {
-          summary: 'Add a pet'
-        },
-        delete: {
-          summary: 'Delete a pet'
-        }
-      },
-      '/users': {
-        summary: 'Users',
-        get: {
-          summary: 'Get all users'
-        },
-        post: {
-          summary: 'Add a user'
-        },
-        delete: {
-          summary: 'Delete a user'
-        }
-      }
-    };
+  // it('should render the api overview', () => {
+  //   const { getByText } = render(<Sidebar title="" paths={{}} />);
 
-    const { getByText } = render(<Sidebar title="" paths={paths} />);
+  //   expect(getByText('API')).toBeInTheDocument();
+  //   expect(getByText('Overview')).toBeInTheDocument();
+  // });
 
-    expect(getByText(paths['/pets'].summary)).toBeInTheDocument();
-    expect(getByText(paths['/pets'].get.summary)).toBeInTheDocument();
-    expect(getByText(paths['/pets'].put.summary)).toBeInTheDocument();
-    expect(getByText(paths['/pets'].options.summary)).toBeInTheDocument();
-    expect(getByText(paths['/pets'].head.summary)).toBeInTheDocument();
-    expect(getByText(paths['/pets'].patch.summary)).toBeInTheDocument();
-    expect(getByText(paths['/pets'].trace.summary)).toBeInTheDocument();
-    expect(getByText(paths['/pets'].post.summary)).toBeInTheDocument();
-    expect(getByText(paths['/pets'].delete.summary)).toBeInTheDocument();
+  // it('should render the http method + pathname when no summary is given', () => {
+  //   const paths = {
+  //     '/pets/:id': {
+  //       get: {},
+  //       post: {},
+  //       delete: {}
+  //     }
+  //   };
+  //   const { getByText } = render(<Sidebar title="" paths={paths} />);
 
-    expect(getByText(paths['/users'].summary)).toBeInTheDocument();
-    expect(getByText(paths['/users'].get.summary)).toBeInTheDocument();
-    expect(getByText(paths['/users'].post.summary)).toBeInTheDocument();
-    expect(getByText(paths['/users'].delete.summary)).toBeInTheDocument();
-  });
+  //   expect(getByText('GET /pets/:id')).toBeInTheDocument();
+  //   expect(getByText('POST /pets/:id')).toBeInTheDocument();
+  //   expect(getByText('DELETE /pets/:id')).toBeInTheDocument();
+  // });
+
+  // it('should render the open api paths with a summary', () => {
+  //   const paths = {
+  //     '/pets': {
+  //       summary: 'Pets',
+  //       get: {
+  //         summary: 'Get all pets'
+  //       },
+  //       put: {
+  //         summary: 'Put a pet'
+  //       },
+  //       options: {
+  //         summary: 'Options a pet'
+  //       },
+  //       head: {
+  //         summary: 'Head a pet'
+  //       },
+  //       patch: {
+  //         summary: 'Patch a pet'
+  //       },
+  //       trace: {
+  //         summary: 'Trace a pet'
+  //       },
+  //       post: {
+  //         summary: 'Add a pet'
+  //       },
+  //       delete: {
+  //         summary: 'Delete a pet'
+  //       }
+  //     },
+  //     '/users': {
+  //       summary: 'Users',
+  //       get: {
+  //         summary: 'Get all users'
+  //       },
+  //       post: {
+  //         summary: 'Add a user'
+  //       },
+  //       delete: {
+  //         summary: 'Delete a user'
+  //       }
+  //     }
+  //   };
+
+  //   const { getByText } = render(<Sidebar title="" paths={paths} />);
+
+  //   expect(getByText(paths['/pets'].summary)).toBeInTheDocument();
+  //   expect(getByText(paths['/pets'].get.summary)).toBeInTheDocument();
+  //   expect(getByText(paths['/pets'].put.summary)).toBeInTheDocument();
+  //   expect(getByText(paths['/pets'].options.summary)).toBeInTheDocument();
+  //   expect(getByText(paths['/pets'].head.summary)).toBeInTheDocument();
+  //   expect(getByText(paths['/pets'].patch.summary)).toBeInTheDocument();
+  //   expect(getByText(paths['/pets'].trace.summary)).toBeInTheDocument();
+  //   expect(getByText(paths['/pets'].post.summary)).toBeInTheDocument();
+  //   expect(getByText(paths['/pets'].delete.summary)).toBeInTheDocument();
+
+  //   expect(getByText(paths['/users'].summary)).toBeInTheDocument();
+  //   expect(getByText(paths['/users'].get.summary)).toBeInTheDocument();
+  //   expect(getByText(paths['/users'].post.summary)).toBeInTheDocument();
+  //   expect(getByText(paths['/users'].delete.summary)).toBeInTheDocument();
+  // });
 });
