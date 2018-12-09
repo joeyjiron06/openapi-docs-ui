@@ -3,86 +3,8 @@ import Operation from './operation';
 import { StyleSheetTestUtils } from 'aphrodite/no-important';
 // this adds custom jest matchers from jest-dom
 import 'jest-dom/extend-expect';
-import {
-  render,
-  within,
-  cleanup,
-  getByValue,
-  getByTestId
-} from 'react-testing-library';
-import { simpleParameters } from '../../fixtures/parameters';
-import { simpleResponses } from '../../fixtures/responses';
-
-// full operation
-const operation = {
-  title: 'Create User',
-  httpMethod: 'POST',
-  responses: [],
-  tags: ['users', 'create'],
-  deprecated: false,
-  authRequired: false,
-  description:
-    'A short description of the api. CommonMark syntax MAY be used for the rich text representation.',
-  servers: [
-    {
-      url: 'https://qa.googleapis.com/gmail/v1/users/{userId}/',
-      description: 'QA Server'
-    }
-  ],
-  parameters: {
-    path: simpleParameters,
-    query: simpleParameters,
-    header: simpleParameters
-  },
-  requestBody: {
-    description: '## This is the request body description',
-    tags: [{ title: 'Can be null' }],
-
-    // todo figure out multiple content types
-    content: simpleParameters
-  },
-  responses: simpleResponses
-};
-
-const simpleOperation = {
-  title: 'Create User',
-  httpMethod: 'POST',
-  servers: [
-    {
-      url: 'https://qa.googleapis.com/gmail/v1/users/{userId}/'
-    }
-  ],
-
-  responses: [
-    {
-      tag: { title: '200 OK' },
-      headers: {
-        content: [
-          {
-            name: {
-              title: 'bearerTokenInResponseHeader'
-            },
-            type: {
-              titles: [{ title: 'stringInResponseHeader' }]
-            }
-          }
-        ]
-      },
-      body: {
-        content: [
-          {
-            name: {
-              title: 'userEmailNameInBody'
-            },
-            type: {
-              titles: [{ title: 'userEmailTypeInBody' }]
-            }
-          }
-        ]
-      }
-    }
-  ]
-};
+import { render, cleanup } from 'react-testing-library';
+import { minimalOperation, fullOperation } from '../../fixtures/operations';
 
 describe('<Operation />', () => {
   beforeEach(() => {
@@ -94,11 +16,13 @@ describe('<Operation />', () => {
   });
 
   it('should render the title', () => {
+    const operation = minimalOperation();
     const { getByText } = render(<Operation operation={operation} />);
     expect(getByText(operation.title)).toBeInTheDocument();
   });
 
   it('should render the tags', () => {
+    const operation = fullOperation('Tag Test');
     const { getByText } = render(<Operation operation={operation} />);
 
     operation.tags.forEach(tag => {
@@ -107,14 +31,21 @@ describe('<Operation />', () => {
   });
 
   it('should render the deprecated tag when deprecated is true', () => {
+    const operation = fullOperation('Deprecated Test');
     const { getByText } = render(
-      <Operation operation={{ ...operation, deprecated: true }} />
+      <Operation
+        operation={{
+          ...operation,
+          deprecated: true
+        }}
+      />
     );
 
     expect(getByText('DEPRECATED')).toBeInTheDocument();
   });
 
   it('should render the authentication banner with authRequired is true', () => {
+    const operation = fullOperation('Auth Test');
     const { getByText } = render(
       <Operation operation={{ ...operation, authRequired: true }} />
     );
@@ -123,12 +54,14 @@ describe('<Operation />', () => {
   });
 
   it('should render the simple text description', () => {
+    const operation = fullOperation('Description Test');
     const { getByText } = render(<Operation operation={operation} />);
 
     expect(getByText(operation.description)).toBeInTheDocument();
   });
 
   it('should render the markdown description', () => {
+    const operation = fullOperation('Markdown Description Test');
     const { getByText } = render(
       <Operation operation={{ ...operation, description: `# hello header` }} />
     );
@@ -139,15 +72,15 @@ describe('<Operation />', () => {
   });
 
   it('should render the server dropdown when servers are given', () => {
-    const { queryBySelectText } = render(
-      <Operation operation={{ ...operation }} />
-    );
+    const operation = fullOperation('Server Test');
+    const { queryBySelectText } = render(<Operation operation={operation} />);
 
     expect(queryBySelectText(operation.servers[0].url)).toBeInTheDocument();
   });
 
   it('should render the request url and method from the server', () => {
-    const { getByText } = render(<Operation operation={{ ...operation }} />);
+    const operation = fullOperation('Request Url Test');
+    const { getByText } = render(<Operation operation={operation} />);
 
     expect(getByText('Request')).toBeInTheDocument();
     expect(
@@ -158,115 +91,121 @@ describe('<Operation />', () => {
   it.skip('should update the url when a value is selected from the server list', () => {});
 
   it('should render the path parameters', () => {
-    const { getByText } = render(<Operation operation={{ ...operation }} />);
-
-    operation.parameters.path[0].name.title;
+    const operation = fullOperation('Path Params Test');
+    const { getByText } = render(<Operation operation={operation} />);
 
     expect(getByText('Path Parameters')).toBeInTheDocument();
-    expect(
-      getByText(operation.parameters.path[0].name.title)
-    ).toBeInTheDocument();
+    operation.parameters.path.forEach(({ name, description }) => {
+      expect(getByText(name.title)).toBeInTheDocument();
+      expect(getByText(description)).toBeInTheDocument();
+    });
   });
 
   it('should render the query parameters', () => {
-    const opWithQuery = {
-      ...operation,
-      parameters: {
-        query: [
-          {
-            name: {
-              title: 'userEmailInQuery'
-            },
-            type: {
-              titles: [{ title: 'string' }]
-            }
-          }
-        ]
-      }
-    };
-    const { getByText } = render(<Operation operation={opWithQuery} />);
+    const operation = fullOperation('Query Params Test');
+    const { getByText } = render(<Operation operation={operation} />);
 
     expect(getByText('Query Parameters')).toBeInTheDocument();
-    expect(
-      getByText(opWithQuery.parameters.query[0].name.title)
-    ).toBeInTheDocument();
+    operation.parameters.query.forEach(({ name, description }) => {
+      expect(getByText(name.title)).toBeInTheDocument();
+      expect(getByText(description)).toBeInTheDocument();
+    });
   });
 
   it('should render the header parameters', () => {
-    const opWithHeaders = {
-      ...operation,
-      parameters: {
-        header: [
-          {
-            name: {
-              title: 'bearerTokenInHeader'
-            },
-            type: {
-              titles: [{ title: 'string' }]
-            }
-          }
-        ]
-      }
-    };
-    const { getByText } = render(<Operation operation={opWithHeaders} />);
+    const operation = fullOperation('Header Params Test');
+    const { getByText } = render(<Operation operation={operation} />);
 
     expect(getByText('Header Parameters')).toBeInTheDocument();
-    expect(
-      getByText(opWithHeaders.parameters.header[0].name.title)
-    ).toBeInTheDocument();
+    operation.parameters.header.forEach(({ name, description }) => {
+      expect(getByText(name.title)).toBeInTheDocument();
+      expect(getByText(description)).toBeInTheDocument();
+    });
   });
 
   it('should render the coookie parameters', () => {
-    const opWithCookies = {
-      ...operation,
-      parameters: {
-        cookie: [
-          {
-            name: {
-              title: 'bearerTokenInHeader'
-            },
-            type: {
-              titles: [{ title: 'string' }]
-            }
-          }
-        ]
-      }
-    };
-    const { getByText } = render(<Operation operation={opWithCookies} />);
+    const operation = fullOperation('Cookie Params Test');
+    const { getByText } = render(<Operation operation={operation} />);
 
     expect(getByText('Cookie Parameters')).toBeInTheDocument();
-    expect(
-      getByText(opWithCookies.parameters.cookie[0].name.title)
-    ).toBeInTheDocument();
+    operation.parameters.cookie.forEach(({ name, description }) => {
+      expect(getByText(name.title)).toBeInTheDocument();
+      expect(getByText(description)).toBeInTheDocument();
+    });
   });
 
   it('should render the request body', () => {
-    const opWithBody = {
-      ...operation,
-      requestBody: {
-        description: '## This is the request body description',
-        tags: [{ title: 'Can be null' }],
-        content: [
-          {
-            name: {
-              title: 'requestBodyNametitle'
-            },
-            type: {
-              titles: [{ title: 'string' }]
-            }
-          }
-        ]
-      }
-    };
-    const { getByText } = render(<Operation operation={opWithBody} />);
+    const operation = fullOperation('Request Body Test');
+    const { getByText } = render(<Operation operation={operation} />);
 
     expect(getByText('Request Body')).toBeInTheDocument();
-    opWithBody.requestBody.tags.forEach(({ title }) => {
+    expect(getByText(operation.requestBody.description)).toBeInTheDocument();
+    operation.requestBody.content.forEach(({ name, description }) => {
+      expect(getByText(name.title)).toBeInTheDocument();
+      expect(getByText(description)).toBeInTheDocument();
+    });
+    operation.requestBody.tags.forEach(({ title }) => {
       expect(getByText(title)).toBeInTheDocument();
     });
   });
 
+  it('should not render the request body description when none is given', () => {
+    const operation = fullOperation('No Request Body Description Test');
+    const { queryByTestId } = render(
+      <Operation
+        operation={{
+          ...operation,
+          requestBody: {
+            ...operation.requestBody,
+            description: undefined
+          }
+        }}
+      />
+    );
+
+    expect(
+      queryByTestId('operationRequestBodyDescription')
+    ).not.toBeInTheDocument();
+  });
+
+  it('should not render the request body tags when none is given', () => {
+    const operation = fullOperation('No Request Body Description Test');
+    const { queryByTestId } = render(
+      <Operation
+        operation={{
+          ...operation,
+          requestBody: {
+            ...operation.requestBody,
+            tags: undefined
+          }
+        }}
+      />
+    );
+
+    expect(queryByTestId('operationRequestBodyTags')).not.toBeInTheDocument();
+  });
+
+  it('should render the request body when markdown is given', () => {
+    const operation = fullOperation('No Request Body Description Test');
+    const { getByText } = render(
+      <Operation
+        operation={{
+          ...operation,
+          requestBody: {
+            ...operation.requestBody,
+            description: '# My Markdown'
+          }
+        }}
+      />
+    );
+
+    const requestBodyDescriptionEl = getByText('My Markdown');
+    expect(requestBodyDescriptionEl).toBeInTheDocument();
+    expect(requestBodyDescriptionEl.tagName).toBe('H1');
+  });
+
   it('should render the responses', () => {
+    const operation = fullOperation('Responses Test');
     const { getByText } = render(<Operation operation={operation} />);
 
     expect(getByText('Responses')).toBeInTheDocument();
@@ -301,7 +240,7 @@ describe('<Operation />', () => {
 
   it('should NOT render optional operation props', () => {
     const { queryByText, queryByTestId } = render(
-      <Operation operation={simpleOperation} />
+      <Operation operation={minimalOperation()} />
     );
 
     expect(queryByTestId('operationDescription')).not.toBeInTheDocument();

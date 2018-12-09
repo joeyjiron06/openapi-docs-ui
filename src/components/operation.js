@@ -55,11 +55,23 @@ const Operation = ({ operation }) => (
     {operation.requestBody && (
       <Fragment>
         <h2>Request Body</h2>
-        {((operation.requestBody && operation.requestBody.tags) || []).map(
-          ({ title }) => (
-            <div key={title}>{title}</div>
-          )
+
+        {operation.requestBody.description && (
+          <Markdown
+            text={operation.requestBody.description}
+            data-testid="operationRequestBodyDescription"
+          />
         )}
+
+        {operation.requestBody.tags && (
+          <div data-testid="operationRequestBodyTags">
+            {operation.requestBody.tags.map(({ title }) => (
+              <div key={title}>{title}</div>
+            ))}
+          </div>
+        )}
+
+        <ParameterTable parameters={operation.requestBody.content} />
       </Fragment>
     )}
 
