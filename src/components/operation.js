@@ -1,20 +1,84 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { ParameterType, ColoredTitleType } from '../types';
+import { ParameterType, ColoredTitleType, ResponseType } from '../types';
+import Markdown from './markdown';
+import ParameterTable from './parameterTable';
 
-const Operation = ({}) => <div>hello</div>;
+const Operation = ({ operation }) => (
+  <div>
+    <h1>{operation.title}</h1>
 
-const ResponseType = PropTypes.shape({
-  tag: PropTypes.shape(ColoredTitleType).isRequired,
-  headers: PropTypes.shape({
-    description: PropTypes.string,
-    content: PropTypes.arrayOf(ParameterType)
-  }),
-  body: PropTypes.shape({
-    description: PropTypes.string,
-    content: PropTypes.arrayOf(ParameterType)
-  }).isRequired
-});
+    <div>
+      {(operation.tags || []).map(tag => (
+        <div key={tag}>{tag}</div>
+      ))}
+    </div>
+
+    {operation.deprecated && <div>DEPRECATED</div>}
+
+    {operation.authRequired && <div>This api requires authentication</div>}
+
+    {operation.description && (
+      <Markdown
+        text={operation.description}
+        data-testid="operationDescription"
+      />
+    )}
+
+    <select>
+      {(operation.servers || []).map(server => (
+        <option key={server.url} value={server.url}>
+          {server.url}
+        </option>
+      ))}
+    </select>
+
+    <h2>Request</h2>
+    <div>{`${operation.httpMethod} ${operation.servers[0].url}`}</div>
+
+    {operation.parameters && (
+      <Fragment>
+        <h2>Path Parameters</h2>
+        <ParameterTable parameters={operation.parameters.path} />
+
+        <h2>Query Parameters</h2>
+        <ParameterTable parameters={operation.parameters.query} />
+
+        <h2>Header Parameters</h2>
+        <ParameterTable parameters={operation.parameters.header} />
+
+        <h2>Cookie Parameters</h2>
+        <ParameterTable parameters={operation.parameters.cookie} />
+      </Fragment>
+    )}
+
+    {operation.requestBody && (
+      <Fragment>
+        <h2>Request Body</h2>
+        {((operation.requestBody && operation.requestBody.tags) || []).map(
+          ({ title }) => (
+            <div key={title}>{title}</div>
+          )
+        )}
+      </Fragment>
+    )}
+
+    <h2>Responses</h2>
+    {operation.responses.map(({ tag, headers, body }) => (
+      <div key={tag.title}>
+        <div>{tag.title}</div>
+
+        <div>Headers</div>
+        <div>{headers.description}</div>
+        <ParameterTable parameters={headers.content} />
+
+        <div>Body</div>
+        <div>{body.description}</div>
+        <ParameterTable parameters={body.content} />
+      </div>
+    ))}
+  </div>
+);
 
 Operation.propTypes = {
   operation: PropTypes.shape({
@@ -22,20 +86,26 @@ Operation.propTypes = {
     tags: PropTypes.arrayOf(PropTypes.string),
     description: PropTypes.string,
     httpMethod: PropTypes.string.isRequired,
-    url: PropTypes.string.isRequired,
     authRequired: PropTypes.bool,
+    servers: PropTypes.arrayOf(
+      PropTypes.shape({
+        url: PropTypes.string.isRequired,
+        description: PropTypes.string
+      })
+    ).isRequired,
+    deprecated: PropTypes.bool,
     requestBody: PropTypes.shape({
       description: PropTypes.string,
       tags: PropTypes.arrayOf(ColoredTitleType),
 
       // todo figure out multiple content types
-      content: PropTypes.arrayOf(ParameterType)
+      content: PropTypes.arrayOf(ParameterType).isRequired
     }),
     responses: PropTypes.arrayOf(ResponseType).isRequired,
     parameters: PropTypes.shape({
       path: PropTypes.arrayOf(ParameterType),
       query: PropTypes.arrayOf(ParameterType),
-      headers: PropTypes.arrayOf(ParameterType),
+      header: PropTypes.arrayOf(ParameterType),
       cookie: PropTypes.arrayOf(ParameterType)
     })
   }).isRequired

@@ -23,3 +23,15 @@ export const ParameterType = PropTypes.shape({
   }).isRequired,
   description: PropTypes.string
 });
+
+export const ResponseType = PropTypes.shape({
+  tag: ColoredTitleType.isRequired,
+  headers: PropTypes.shape({
+    description: PropTypes.string,
+    content: PropTypes.arrayOf(ParameterType)
+  }),
+  body: PropTypes.shape({
+    description: PropTypes.string,
+    content: PropTypes.arrayOf(ParameterType)
+  }).isRequired
+});

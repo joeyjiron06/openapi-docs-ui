@@ -1,8 +1,8 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { Parser, HtmlRenderer } from 'commonmark';
 import { StyleSheet, css } from 'aphrodite/no-important';
 import { ParameterType } from '../types';
+import Markdown from './markdown';
 
 const colors = {
   red: '#F25F5C',
@@ -39,18 +39,18 @@ const ParameterTable = ({ parameters, className }) => (
             })}
           </td>
 
-          <td
-            className={css(styles.tableData)}
-            dangerouslySetInnerHTML={{
-              __html: renderMarkdown(description)
-            }}
-          />
+          <td className={css(styles.tableData)}>
+            <Markdown text={description} />
+          </td>
         </tr>
       ))}
     </tbody>
   </table>
 );
 
+ParameterTable.defaultProps = {
+  parameters: []
+};
 ParameterTable.propTypes = {
   parameters: PropTypes.arrayOf(ParameterType).isRequired,
   className: PropTypes.string
@@ -98,14 +98,6 @@ const styles = StyleSheet.create({
     fontSize: 11
   }
 });
-
-const renderMarkdown = (text = '') =>
-  new HtmlRenderer().render(
-    new Parser({
-      smart: true,
-      safe: true
-    }).parse(text)
-  );
 
 const renderParam = ({ headers, subtitles, titles }) => (
   <div className={css(styles.param)}>
