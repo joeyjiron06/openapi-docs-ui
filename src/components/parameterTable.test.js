@@ -4,6 +4,7 @@ import { StyleSheetTestUtils } from 'aphrodite/no-important';
 // this adds custom jest matchers from jest-dom
 import 'jest-dom/extend-expect';
 import { render, within, cleanup } from 'react-testing-library';
+import { fullParameter, minimalParameter } from '../../fixtures/parameters';
 
 describe('<ParameterTable />', () => {
   beforeEach(() => {
@@ -15,12 +16,7 @@ describe('<ParameterTable />', () => {
   });
 
   it('should render the table headers', () => {
-    const parameters = [
-      {
-        name: { title: '' },
-        type: { titles: [{ title: '' }] }
-      }
-    ];
+    const parameters = [fullParameter('Table Header Test')];
     const { getByText } = render(<ParameterTable parameters={parameters} />);
 
     expect(getByText('Name')).toBeInTheDocument();
@@ -30,23 +26,19 @@ describe('<ParameterTable />', () => {
 
   it('should render the parameters with subtitles and headers', () => {
     const parameters = [
-      {
-        name: {
-          title: 'userEmail',
-          subtitles: [{ title: 'required', color: 'red' }]
-        },
-        type: {
-          titles: [{ title: 'string' }],
-          subtitles: [{ title: 'email', color: 'default' }],
-          headers: [{ title: 'exactly', color: 'default' }]
-        }
-      }
+      fullParameter('param1'),
+      fullParameter('param2'),
+      fullParameter('param3')
     ];
 
     const { getByText } = render(<ParameterTable parameters={parameters} />);
 
     parameters.forEach(parameter => {
       expect(getByText(parameter.name.title)).toBeInTheDocument();
+
+      parameter.name.headers.forEach(({ title }) => {
+        expect(getByText(title)).toBeInTheDocument();
+      });
 
       parameter.name.subtitles.forEach(({ title }) => {
         expect(getByText(title)).toBeInTheDocument();
@@ -68,13 +60,9 @@ describe('<ParameterTable />', () => {
 
   it('should render a simple text description', () => {
     const parameters = [
-      {
-        name: { title: 'email' },
-        type: {
-          titles: [{ title: 'string' }]
-        },
-        description: 'This is the email of the user'
-      }
+      fullParameter('param1'),
+      fullParameter('param2'),
+      fullParameter('param3')
     ];
 
     const { getByText } = render(<ParameterTable parameters={parameters} />);
@@ -87,19 +75,16 @@ describe('<ParameterTable />', () => {
   it('should render a markdown description', () => {
     const parameters = [
       {
-        name: { title: 'email' },
-        type: {
-          titles: [{ title: 'string' }]
-        },
+        ...fullParameter('param1'),
         description: `
-          # Header1
-          Some text here
+        # Header1
+        Some text here
 
-          **bold text**
+        **bold text**
 
-          - listItem1
-          - listItem2
-        `
+        - listItem1
+        - listItem2
+      `
           .split('\n')
           .map(line => line.trim())
           .join('\n')
@@ -115,38 +100,21 @@ describe('<ParameterTable />', () => {
   });
 
   it('should render links when a parameter has a link', () => {
-    const parameters = [
-      {
-        name: { title: 'User' },
-        type: {
-          titles: [
-            {
-              title: 'string'
-            },
-            {
-              title: 'User',
-              link: '/models/user'
-            },
-            {
-              title: 'Person',
-              link: '/models/person'
-            }
-          ]
-        }
-      }
-    ];
+    const param1 = fullParameter('param1');
+    const param2 = fullParameter('param2');
+    const parameters = [param1, param2];
+    const { getByText } = render(<ParameterTable parameters={parameters} />);
 
-    const { getByTestId } = render(<ParameterTable parameters={parameters} />);
-
-    const parameterTypeContainer = getByTestId('parameter-type');
-
-    expect(within(parameterTypeContainer).getByText('User')).toHaveAttribute(
+    expect(getByText(param1.type.titles[0].title)).toBeInTheDocument();
+    expect(getByText(param1.type.titles[0].title)).toHaveAttribute(
       'href',
-      '/models/user'
+      `/param1/type/title/link`
     );
-    expect(within(parameterTypeContainer).getByText('Person')).toHaveAttribute(
+
+    expect(getByText(param2.type.titles[0].title)).toBeInTheDocument();
+    expect(getByText(param2.type.titles[0].title)).toHaveAttribute(
       'href',
-      '/models/person'
+      `/param2/type/title/link`
     );
   });
 });
