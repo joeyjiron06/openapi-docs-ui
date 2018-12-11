@@ -3,7 +3,7 @@ import Operation from './operation';
 import { StyleSheetTestUtils } from 'aphrodite/no-important';
 // this adds custom jest matchers from jest-dom
 import 'jest-dom/extend-expect';
-import { render, cleanup } from 'react-testing-library';
+import { render, cleanup, fireEvent } from 'react-testing-library';
 import { minimalOperation, fullOperation } from '../../fixtures/operations';
 
 describe('<Operation />', () => {
@@ -94,7 +94,7 @@ describe('<Operation />', () => {
       { url: 'https://server1.com' },
       { url: 'https://server2.com' }
     ];
-    const { getByText } = render(
+    const { queryBySelectText, getByText } = render(
       <Operation
         operation={{
           ...operation,
@@ -103,12 +103,15 @@ describe('<Operation />', () => {
       />
     );
 
-    // click select
-    // click the server2 url
+    fireEvent.change(queryBySelectText(servers[0].url), {
+      target: {
+        value: servers[1].url
+      }
+    });
 
-    // expect server url to be in the document
-
-    expect(getByText('Request')).toBeInTheDocument();
+    expect(
+      getByText(`${operation.httpMethod} ${servers[1].url}`)
+    ).toBeInTheDocument();
   });
 
   it('should render the path parameters', () => {

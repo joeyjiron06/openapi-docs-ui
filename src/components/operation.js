@@ -1,112 +1,129 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
 import { ParameterType, ColoredTitleType, ResponseType } from '../types';
 import Markdown from './markdown';
 import ParameterTable from './parameterTable';
+class Operation extends Component {
+  state = {
+    selectedUrl: null
+  };
 
-const Operation = ({ operation }) => (
-  <div>
-    <h1>{operation.title}</h1>
+  serverUrlClicked = e => {
+    this.setState({
+      selectedUrl: e.target.value
+    });
+  };
 
-    <div>
-      {(operation.tags || []).map(tag => (
-        <div key={tag}>{tag}</div>
-      ))}
-    </div>
+  render() {
+    const { operation } = this.props;
+    const { selectedUrl } = this.state;
+    const serverUrl = selectedUrl || operation.servers[0].url;
 
-    {operation.deprecated && <div>DEPRECATED</div>}
+    return (
+      <div>
+        <h1>{operation.title}</h1>
 
-    {operation.authRequired && <div>This api requires authentication</div>}
+        <div>
+          {(operation.tags || []).map(tag => (
+            <div key={tag}>{tag}</div>
+          ))}
+        </div>
 
-    {operation.description && (
-      <Markdown
-        text={operation.description}
-        data-testid="operationDescription"
-      />
-    )}
+        {operation.deprecated && <div>DEPRECATED</div>}
 
-    <select>
-      {(operation.servers || []).map(server => (
-        <option key={server.url} value={server.url}>
-          {server.url}
-        </option>
-      ))}
-    </select>
+        {operation.authRequired && <div>This api requires authentication</div>}
 
-    <h2>Request</h2>
-    <div>{`${operation.httpMethod} ${operation.servers[0].url}`}</div>
-
-    {operation.parameters && (
-      <Fragment>
-        {operation.parameters.path && (
-          <Fragment>
-            <h2>Path Parameters</h2>
-            <ParameterTable parameters={operation.parameters.path} />
-          </Fragment>
-        )}
-
-        {operation.parameters.query && (
-          <Fragment>
-            <h2>Query Parameters</h2>
-            <ParameterTable parameters={operation.parameters.query} />
-          </Fragment>
-        )}
-
-        {operation.parameters.header && (
-          <Fragment>
-            <h2>Header Parameters</h2>
-            <ParameterTable parameters={operation.parameters.header} />
-          </Fragment>
-        )}
-
-        {operation.parameters.cookie && (
-          <Fragment>
-            <h2>Cookie Parameters</h2>
-            <ParameterTable parameters={operation.parameters.cookie} />
-          </Fragment>
-        )}
-      </Fragment>
-    )}
-
-    {operation.requestBody && (
-      <Fragment>
-        <h2>Request Body</h2>
-
-        {operation.requestBody.description && (
+        {operation.description && (
           <Markdown
-            text={operation.requestBody.description}
-            data-testid="operationRequestBodyDescription"
+            text={operation.description}
+            data-testid="operationDescription"
           />
         )}
 
-        {operation.requestBody.tags && (
-          <div data-testid="operationRequestBodyTags">
-            {operation.requestBody.tags.map(({ title }) => (
-              <div key={title}>{title}</div>
-            ))}
-          </div>
+        <select onChange={this.serverUrlClicked}>
+          {operation.servers.map(server => (
+            <option key={server.url} value={server.url}>
+              {server.url}
+            </option>
+          ))}
+        </select>
+
+        <h2>Request</h2>
+        <div>{`${operation.httpMethod} ${serverUrl}`}</div>
+
+        {operation.parameters && (
+          <Fragment>
+            {operation.parameters.path && (
+              <Fragment>
+                <h2>Path Parameters</h2>
+                <ParameterTable parameters={operation.parameters.path} />
+              </Fragment>
+            )}
+
+            {operation.parameters.query && (
+              <Fragment>
+                <h2>Query Parameters</h2>
+                <ParameterTable parameters={operation.parameters.query} />
+              </Fragment>
+            )}
+
+            {operation.parameters.header && (
+              <Fragment>
+                <h2>Header Parameters</h2>
+                <ParameterTable parameters={operation.parameters.header} />
+              </Fragment>
+            )}
+
+            {operation.parameters.cookie && (
+              <Fragment>
+                <h2>Cookie Parameters</h2>
+                <ParameterTable parameters={operation.parameters.cookie} />
+              </Fragment>
+            )}
+          </Fragment>
         )}
 
-        <ParameterTable parameters={operation.requestBody.content} />
-      </Fragment>
-    )}
+        {operation.requestBody && (
+          <Fragment>
+            <h2>Request Body</h2>
 
-    <h2>Responses</h2>
-    {operation.responses.map(({ tag, headers, body }) => (
-      <div key={tag.title}>
-        <div>{tag.title}</div>
+            {operation.requestBody.description && (
+              <Markdown
+                text={operation.requestBody.description}
+                data-testid="operationRequestBodyDescription"
+              />
+            )}
 
-        <div>Headers</div>
-        <div>{headers.description}</div>
-        <ParameterTable parameters={headers.content} />
+            {operation.requestBody.tags && (
+              <div data-testid="operationRequestBodyTags">
+                {operation.requestBody.tags.map(({ title }) => (
+                  <div key={title}>{title}</div>
+                ))}
+              </div>
+            )}
 
-        <div>Body</div>
-        <div>{body.description}</div>
-        <ParameterTable parameters={body.content} />
+            <ParameterTable parameters={operation.requestBody.content} />
+          </Fragment>
+        )}
+
+        <h2>Responses</h2>
+        {operation.responses.map(({ tag, headers, body }) => (
+          <div key={tag.title}>
+            <div>{tag.title}</div>
+
+            <div>Headers</div>
+            <div>{headers.description}</div>
+            <ParameterTable parameters={headers.content} />
+
+            <div>Body</div>
+            <div>{body.description}</div>
+            <ParameterTable parameters={body.content} />
+          </div>
+        ))}
       </div>
-    ))}
-  </div>
-);
+    );
+  }
+}
 
 Operation.propTypes = {
   operation: PropTypes.shape({
@@ -115,6 +132,7 @@ Operation.propTypes = {
     description: PropTypes.string,
     httpMethod: PropTypes.string.isRequired,
     authRequired: PropTypes.bool,
+    // path: PropTypes.string.isRequired,
     servers: PropTypes.arrayOf(
       PropTypes.shape({
         url: PropTypes.string.isRequired,
