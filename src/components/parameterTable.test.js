@@ -108,13 +108,13 @@ describe('<ParameterTable />', () => {
     expect(getByText(param1.type.titles[0].title)).toBeInTheDocument();
     expect(getByText(param1.type.titles[0].title)).toHaveAttribute(
       'href',
-      `/param1/type/title/link`
+      param1.type.titles[0].link
     );
 
     expect(getByText(param2.type.titles[0].title)).toBeInTheDocument();
     expect(getByText(param2.type.titles[0].title)).toHaveAttribute(
       'href',
-      `/param2/type/title/link`
+      param2.type.titles[0].link
     );
   });
 });

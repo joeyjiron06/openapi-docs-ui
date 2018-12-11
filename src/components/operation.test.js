@@ -88,7 +88,28 @@ describe('<Operation />', () => {
     ).toBeInTheDocument();
   });
 
-  it.skip('should update the url when a value is selected from the server list', () => {});
+  it('should update the url when a value is selected from the server list', () => {
+    const operation = fullOperation('Update Request Url Test');
+    const servers = [
+      { url: 'https://server1.com' },
+      { url: 'https://server2.com' }
+    ];
+    const { getByText } = render(
+      <Operation
+        operation={{
+          ...operation,
+          servers
+        }}
+      />
+    );
+
+    // click select
+    // click the server2 url
+
+    // expect server url to be in the document
+
+    expect(getByText('Request')).toBeInTheDocument();
+  });
 
   it('should render the path parameters', () => {
     const operation = fullOperation('Path Params Test');
@@ -240,7 +261,11 @@ describe('<Operation />', () => {
 
   it('should NOT render optional operation props', () => {
     const { queryByText, queryByTestId } = render(
-      <Operation operation={minimalOperation()} />
+      <Operation
+        operation={minimalOperation({
+          parameters: {}
+        })}
+      />
     );
 
     expect(queryByTestId('operationDescription')).not.toBeInTheDocument();

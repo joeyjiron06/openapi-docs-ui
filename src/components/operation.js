@@ -38,17 +38,33 @@ const Operation = ({ operation }) => (
 
     {operation.parameters && (
       <Fragment>
-        <h2>Path Parameters</h2>
-        <ParameterTable parameters={operation.parameters.path} />
+        {operation.parameters.path && (
+          <Fragment>
+            <h2>Path Parameters</h2>
+            <ParameterTable parameters={operation.parameters.path} />
+          </Fragment>
+        )}
 
-        <h2>Query Parameters</h2>
-        <ParameterTable parameters={operation.parameters.query} />
+        {operation.parameters.query && (
+          <Fragment>
+            <h2>Query Parameters</h2>
+            <ParameterTable parameters={operation.parameters.query} />
+          </Fragment>
+        )}
 
-        <h2>Header Parameters</h2>
-        <ParameterTable parameters={operation.parameters.header} />
+        {operation.parameters.header && (
+          <Fragment>
+            <h2>Header Parameters</h2>
+            <ParameterTable parameters={operation.parameters.header} />
+          </Fragment>
+        )}
 
-        <h2>Cookie Parameters</h2>
-        <ParameterTable parameters={operation.parameters.cookie} />
+        {operation.parameters.cookie && (
+          <Fragment>
+            <h2>Cookie Parameters</h2>
+            <ParameterTable parameters={operation.parameters.cookie} />
+          </Fragment>
+        )}
       </Fragment>
     )}
 
