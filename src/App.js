@@ -7,7 +7,11 @@ class App extends Component {
       <div className={css(styles.app)}>
         <header className="App-header">
           <p>
-            Edit <code>src/App.js</code> and save to reload.
+            Edit
+            {' '}
+            <code>src/App.js</code>
+            {' '}
+and save to reload.
           </p>
           <a
             className="App-link"
@@ -25,8 +29,8 @@ class App extends Component {
 
 const styles = StyleSheet.create({
   app: {
-    background: 'red'
-  }
+    background: 'red',
+  },
 });
 
 export default App;
