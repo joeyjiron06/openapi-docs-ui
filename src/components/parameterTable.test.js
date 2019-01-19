@@ -1,10 +1,10 @@
 import React from 'react';
-import ParameterTable from './parameterTable';
 import { StyleSheetTestUtils } from 'aphrodite/no-important';
 // this adds custom jest matchers from jest-dom
 import 'jest-dom/extend-expect';
-import { render, within, cleanup } from 'react-testing-library';
-import { fullParameter, minimalParameter } from '../../fixtures/parameters';
+import { render, cleanup } from 'react-testing-library';
+import ParameterTable from './parameterTable';
+import { fullParameter } from '../../fixtures/parameters';
 
 describe('<ParameterTable />', () => {
   beforeEach(() => {
@@ -25,15 +25,11 @@ describe('<ParameterTable />', () => {
   });
 
   it('should render the parameters with subtitles and headers', () => {
-    const parameters = [
-      fullParameter('param1'),
-      fullParameter('param2'),
-      fullParameter('param3')
-    ];
+    const parameters = [fullParameter('param1'), fullParameter('param2'), fullParameter('param3')];
 
     const { getByText } = render(<ParameterTable parameters={parameters} />);
 
-    parameters.forEach(parameter => {
+    parameters.forEach((parameter) => {
       expect(getByText(parameter.name.title)).toBeInTheDocument();
 
       parameter.name.headers.forEach(({ title }) => {
@@ -59,15 +55,11 @@ describe('<ParameterTable />', () => {
   });
 
   it('should render a simple text description', () => {
-    const parameters = [
-      fullParameter('param1'),
-      fullParameter('param2'),
-      fullParameter('param3')
-    ];
+    const parameters = [fullParameter('param1'), fullParameter('param2'), fullParameter('param3')];
 
     const { getByText } = render(<ParameterTable parameters={parameters} />);
 
-    parameters.forEach(parameter => {
+    parameters.forEach((parameter) => {
       expect(getByText(parameter.description)).toBeInTheDocument();
     });
   });
@@ -87,8 +79,8 @@ describe('<ParameterTable />', () => {
       `
           .split('\n')
           .map(line => line.trim())
-          .join('\n')
-      }
+          .join('\n'),
+      },
     ];
 
     const { getByText } = render(<ParameterTable parameters={parameters} />);
@@ -108,13 +100,13 @@ describe('<ParameterTable />', () => {
     expect(getByText(param1.type.titles[0].title)).toBeInTheDocument();
     expect(getByText(param1.type.titles[0].title)).toHaveAttribute(
       'href',
-      param1.type.titles[0].link
+      param1.type.titles[0].link,
     );
 
     expect(getByText(param2.type.titles[0].title)).toBeInTheDocument();
     expect(getByText(param2.type.titles[0].title)).toHaveAttribute(
       'href',
-      param2.type.titles[0].link
+      param2.type.titles[0].link,
     );
   });
 });

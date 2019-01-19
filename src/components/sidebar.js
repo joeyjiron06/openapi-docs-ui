@@ -11,16 +11,11 @@ const Sidebar = ({ sections, title, version }) => (
 
     {
       <div>
-        {sections.map(({ title, items }, index) => (
-          <div key={index}>
-            <div className={css(styles.listItem, styles.sectionTitle)}>
-              {title}
-            </div>
-            {items.map(({ title }, index) => (
-              <div
-                key={`${index}`}
-                className={css(styles.listItem, styles.itemTitle)}
-              >
+        {sections.map(({ title, items }) => (
+          <div key={title}>
+            <div className={css(styles.listItem, styles.sectionTitle)}>{title}</div>
+            {items.map(({ title }) => (
+              <div key={`${title}`} className={css(styles.listItem, styles.itemTitle)}>
                 {title}
               </div>
             ))}
@@ -39,11 +34,11 @@ Sidebar.propTypes = {
       title: PropTypes.string.isRequired,
       items: PropTypes.arrayOf(
         PropTypes.shape({
-          title: PropTypes.string.isRequired
-        })
-      ).isRequired
-    })
-  ).isRequired
+          title: PropTypes.string.isRequired,
+        }),
+      ).isRequired,
+    }),
+  ).isRequired,
 };
 
 const styles = StyleSheet.create({
@@ -53,29 +48,29 @@ const styles = StyleSheet.create({
     padding: 40,
     maxWidth: 240,
     boxSizing: 'border-box',
-    minHeight: '100vh'
+    minHeight: '100vh',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginRight: 10
+    marginRight: 10,
   },
   listItem: {
-    marginBottom: 22
+    marginBottom: 22,
   },
   sectionTitle: {
     fontWeight: 'bold',
     fontSize: 16,
-    marginTop: 40
+    marginTop: 40,
   },
   itemTitle: {
     cursor: 'pointer',
     opacity: 0.8,
     transition: 'opacity 250ms ease-in-out',
     ':hover': {
-      opacity: 1
-    }
-  }
+      opacity: 1,
+    },
+  },
 });
 
 export default Sidebar;

@@ -3,13 +3,7 @@ import PropTypes from 'prop-types';
 import { StyleSheet, css } from 'aphrodite/no-important';
 import { ParameterType } from '../types';
 import Markdown from './markdown';
-
-const colors = {
-  red: '#F25F5C',
-  yellow: '#F8E71C',
-  default: '#FFFFFF70',
-  green: '#B8E986'
-};
+import theme from '../util/theme';
 
 const ParameterTable = ({ parameters, className }) => (
   <table className={css(styles.root, className)}>
@@ -27,7 +21,7 @@ const ParameterTable = ({ parameters, className }) => (
             {renderParam({
               headers: name.headers,
               subtitles: name.subtitles,
-              titles: [{ title: name.title }]
+              titles: [{ title: name.title }],
             })}
           </td>
 
@@ -35,7 +29,7 @@ const ParameterTable = ({ parameters, className }) => (
             {renderParam({
               headers: type.headers,
               subtitles: type.subtitles,
-              titles: type.titles
+              titles: type.titles,
             })}
           </td>
 
@@ -49,11 +43,12 @@ const ParameterTable = ({ parameters, className }) => (
 );
 
 ParameterTable.defaultProps = {
-  parameters: []
+  className: null,
 };
+
 ParameterTable.propTypes = {
   parameters: PropTypes.arrayOf(ParameterType).isRequired,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 const styles = StyleSheet.create({
@@ -62,44 +57,47 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     borderCollapse: 'collapse',
     borderRadius: 6,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    width: '100%',
   },
   head: {
     backgroundColor: '#2A2A2A',
     fontWeight: 'bold',
-    fontSize: 16
+    fontSize: 16,
   },
   body: {
-    backgroundColor: '#484848'
+    backgroundColor: '#484848',
   },
   tableData: {
     verticalAlign: 'center',
     paddingTop: 10,
     paddingBottom: 10,
     ':first-child': {
-      paddingLeft: 20
-    }
+      paddingLeft: 20,
+    },
   },
   tableRow: {
     borderBottomColor: '#565656',
     borderBottomWidth: 1,
-    borderBottomStyle: 'solid'
+    borderBottomStyle: 'solid',
   },
 
   link: {
-    color: 'white'
+    color: 'white',
   },
   param: {},
   paramMainTitles: {
-    fontFamily: `'Roboto Mono', 'monospace'`,
-    fontWeight: 500
+    fontFamily: "'Roboto Mono', 'monospace'",
+    fontWeight: 500,
   },
   paramTitles: {
-    fontSize: 11
-  }
+    fontSize: 11,
+  },
 });
 
-const renderParam = ({ headers, subtitles, titles }) => (
+const renderParam = (
+  { headers, subtitles, titles }, // eslint-disable-line
+) => (
   <div className={css(styles.param)}>
     {renderTitles(headers)}
 
@@ -126,7 +124,7 @@ const renderParam = ({ headers, subtitles, titles }) => (
 const renderTitles = (titles = []) => (
   <div className={css(styles.paramTitles)}>
     {titles.map(({ title, color = 'default' }) => (
-      <div key={title} style={{ color: colors[color] }}>
+      <div key={title} style={{ color: theme.colors[color] }}>
         {title}
       </div>
     ))}

@@ -20,9 +20,6 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9001 -c .storybook"
   },
-  "eslintConfig": {
-    "extends": "airbnb"
-  },
   "browserslist": [
     ">0.2%",
     "not dead",
@@ -30,6 +27,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@storybook/react": "^4.0.12"
+    "@storybook/react": "^4.0.12",
+    "eslint-plugin-jest": "^22.1.3"
   }
 }

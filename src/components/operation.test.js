@@ -1,9 +1,8 @@
 import React from 'react';
-import Operation from './operation';
 import { StyleSheetTestUtils } from 'aphrodite/no-important';
-// this adds custom jest matchers from jest-dom
-import 'jest-dom/extend-expect';
 import { render, cleanup, fireEvent } from 'react-testing-library';
+import 'jest-dom/extend-expect';
+import Operation from './operation';
 import { minimalOperation, fullOperation } from '../../fixtures/operations';
 
 describe('<Operation />', () => {
@@ -25,7 +24,7 @@ describe('<Operation />', () => {
     const operation = fullOperation('Tag Test');
     const { getByText } = render(<Operation operation={operation} />);
 
-    operation.tags.forEach(tag => {
+    operation.tags.forEach((tag) => {
       expect(getByText(tag)).toBeInTheDocument();
     });
   });
@@ -36,9 +35,9 @@ describe('<Operation />', () => {
       <Operation
         operation={{
           ...operation,
-          deprecated: true
+          deprecated: true,
         }}
-      />
+      />,
     );
 
     expect(getByText('DEPRECATED')).toBeInTheDocument();
@@ -46,9 +45,7 @@ describe('<Operation />', () => {
 
   it('should render the authentication banner with authRequired is true', () => {
     const operation = fullOperation('Auth Test');
-    const { getByText } = render(
-      <Operation operation={{ ...operation, authRequired: true }} />
-    );
+    const { getByText } = render(<Operation operation={{ ...operation, authRequired: true }} />);
 
     expect(getByText('This api requires authentication')).toBeInTheDocument();
   });
@@ -63,7 +60,7 @@ describe('<Operation />', () => {
   it('should render the markdown description', () => {
     const operation = fullOperation('Markdown Description Test');
     const { getByText } = render(
-      <Operation operation={{ ...operation, description: `# hello header` }} />
+      <Operation operation={{ ...operation, description: '# hello header' }} />,
     );
 
     const descriptionHeaderEl = getByText('hello header');
@@ -80,39 +77,37 @@ describe('<Operation />', () => {
 
   it('should render the request url and method from the server', () => {
     const operation = fullOperation('Request Url Test');
-    const { getByText } = render(<Operation operation={operation} />);
+    const { getByText, getByTestId } = render(<Operation operation={operation} />);
 
     expect(getByText('Request')).toBeInTheDocument();
-    expect(
-      getByText(`${operation.httpMethod} ${operation.servers[0].url}`)
-    ).toBeInTheDocument();
+    expect(getByTestId('operationRequestUrl')).toHaveTextContent(
+      `${operation.httpMethod}${operation.servers[0].url}`,
+    );
   });
 
   it('should update the url when a value is selected from the server list', () => {
     const operation = fullOperation('Update Request Url Test');
-    const servers = [
-      { url: 'https://server1.com' },
-      { url: 'https://server2.com' }
-    ];
-    const { queryBySelectText, getByText } = render(
+    const servers = [{ url: 'https://server1.com' }, { url: 'https://server2.com' }];
+    const { queryBySelectText, getByTestId } = render(
       <Operation
         operation={{
           ...operation,
-          servers
+          servers,
         }}
-      />
+      />,
     );
 
     fireEvent.change(queryBySelectText(servers[0].url), {
       target: {
-        value: servers[1].url
-      }
+        value: servers[1].url,
+      },
     });
 
-    expect(
-      getByText(`${operation.httpMethod} ${servers[1].url}`)
-    ).toBeInTheDocument();
+    expect(getByTestId('operationRequestUrl')).toHaveTextContent(
+      `${operation.httpMethod}${servers[1].url}`,
+    );
   });
+  // TODO add test when path is also given
 
   it('should render the path parameters', () => {
     const operation = fullOperation('Path Params Test');
@@ -181,15 +176,13 @@ describe('<Operation />', () => {
           ...operation,
           requestBody: {
             ...operation.requestBody,
-            description: undefined
-          }
+            description: undefined,
+          },
         }}
-      />
+      />,
     );
 
-    expect(
-      queryByTestId('operationRequestBodyDescription')
-    ).not.toBeInTheDocument();
+    expect(queryByTestId('operationRequestBodyDescription')).not.toBeInTheDocument();
   });
 
   it('should not render the request body tags when none is given', () => {
@@ -200,10 +193,10 @@ describe('<Operation />', () => {
           ...operation,
           requestBody: {
             ...operation.requestBody,
-            tags: undefined
-          }
+            tags: undefined,
+          },
         }}
-      />
+      />,
     );
 
     expect(queryByTestId('operationRequestBodyTags')).not.toBeInTheDocument();
@@ -217,10 +210,10 @@ describe('<Operation />', () => {
           ...operation,
           requestBody: {
             ...operation.requestBody,
-            description: '# My Markdown'
-          }
+            description: '# My Markdown',
+          },
         }}
-      />
+      />,
     );
 
     const requestBodyDescriptionEl = getByText('My Markdown');
@@ -266,15 +259,13 @@ describe('<Operation />', () => {
     const { queryByText, queryByTestId } = render(
       <Operation
         operation={minimalOperation({
-          parameters: {}
+          parameters: {},
         })}
-      />
+      />,
     );
 
     expect(queryByTestId('operationDescription')).not.toBeInTheDocument();
-    expect(
-      queryByTestId('This api requires authentication')
-    ).not.toBeInTheDocument();
+    expect(queryByTestId('This api requires authentication')).not.toBeInTheDocument();
     expect(queryByText('DEPRECATED')).not.toBeInTheDocument();
 
     expect(queryByText('Request Body')).not.toBeInTheDocument();

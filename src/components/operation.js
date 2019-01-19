@@ -1,16 +1,19 @@
 import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
+import { StyleSheet, css } from 'aphrodite/no-important';
 import { ParameterType, ColoredTitleType, ResponseType } from '../types';
 import Markdown from './markdown';
 import ParameterTable from './parameterTable';
+import theme from '../util/theme';
+
 class Operation extends Component {
   state = {
-    selectedUrl: null
+    selectedUrl: null,
   };
 
-  serverUrlClicked = e => {
+  serverUrlClicked = (e) => {
     this.setState({
-      selectedUrl: e.target.value
+      selectedUrl: e.target.value,
     });
   };
 
@@ -20,24 +23,25 @@ class Operation extends Component {
     const serverUrl = selectedUrl || operation.servers[0].url;
 
     return (
-      <div>
+      <div className={css(styles.root)}>
         <h1>{operation.title}</h1>
 
-        <div>
+        <div className={css(styles.tags)}>
           {(operation.tags || []).map(tag => (
-            <div key={tag}>{tag}</div>
+            <div className={css(styles.tag)} key={tag}>
+              {tag}
+            </div>
           ))}
         </div>
 
-        {operation.deprecated && <div>DEPRECATED</div>}
+        {operation.deprecated && <div className={css(styles.deprecatedTag)}>DEPRECATED</div>}
 
-        {operation.authRequired && <div>This api requires authentication</div>}
+        {operation.authRequired && (
+          <div className={css(styles.authRequired)}>This api requires authentication</div>
+        )}
 
         {operation.description && (
-          <Markdown
-            text={operation.description}
-            data-testid="operationDescription"
-          />
+          <Markdown text={operation.description} data-testid="operationDescription" />
         )}
 
         <select onChange={this.serverUrlClicked}>
@@ -49,7 +53,10 @@ class Operation extends Component {
         </select>
 
         <h2>Request</h2>
-        <div>{`${operation.httpMethod} ${serverUrl}`}</div>
+        <div data-testid="operationRequestUrl" className={css(styles.requestUrl)}>
+          <span className={css(styles.httpMethod)}>{operation.httpMethod}</span>
+          <span>{serverUrl}</span>
+        </div>
 
         {operation.parameters && (
           <Fragment>
@@ -95,9 +102,11 @@ class Operation extends Component {
             )}
 
             {operation.requestBody.tags && (
-              <div data-testid="operationRequestBodyTags">
-                {operation.requestBody.tags.map(({ title }) => (
-                  <div key={title}>{title}</div>
+              <div className={css(styles.requestBodyTags)} data-testid="operationRequestBodyTags">
+                {operation.requestBody.tags.map(({ title, color = 'default' }) => (
+                  <div key={title} style={{ color: theme.colors[color] }}>
+                    {title}
+                  </div>
                 ))}
               </div>
             )}
@@ -108,15 +117,22 @@ class Operation extends Component {
 
         <h2>Responses</h2>
         {operation.responses.map(({ tag, headers, body }) => (
-          <div key={tag.title}>
-            <div>{tag.title}</div>
+          <div className={css(styles.response)} key={tag.title}>
+            <div
+              style={{
+                backgroundColor: theme.colors[tag.color || 'default'],
+              }}
+              className={css(styles.responseTag)}
+            >
+              {tag.title}
+            </div>
 
-            <div>Headers</div>
-            <div>{headers.description}</div>
+            <h3>Headers</h3>
+            <Markdown text={headers.description} />
             <ParameterTable parameters={headers.content} />
 
-            <div>Body</div>
-            <div>{body.description}</div>
+            <h3>Body</h3>
+            <Markdown text={body.description} />
             <ParameterTable parameters={body.content} />
           </div>
         ))}
@@ -136,8 +152,8 @@ Operation.propTypes = {
     servers: PropTypes.arrayOf(
       PropTypes.shape({
         url: PropTypes.string.isRequired,
-        description: PropTypes.string
-      })
+        description: PropTypes.string,
+      }),
     ).isRequired,
     deprecated: PropTypes.bool,
     requestBody: PropTypes.shape({
@@ -145,16 +161,65 @@ Operation.propTypes = {
       tags: PropTypes.arrayOf(ColoredTitleType),
 
       // todo figure out multiple content types
-      content: PropTypes.arrayOf(ParameterType).isRequired
+      content: PropTypes.arrayOf(ParameterType).isRequired,
     }),
     responses: PropTypes.arrayOf(ResponseType).isRequired,
     parameters: PropTypes.shape({
       path: PropTypes.arrayOf(ParameterType),
       query: PropTypes.arrayOf(ParameterType),
       header: PropTypes.arrayOf(ParameterType),
-      cookie: PropTypes.arrayOf(ParameterType)
-    })
-  }).isRequired
+      cookie: PropTypes.arrayOf(ParameterType),
+    }),
+  }).isRequired,
 };
+
+const styles = StyleSheet.create({
+  root: {},
+  tags: {
+    display: 'flex',
+  },
+  tag: {
+    backgroundColor: '#696969',
+    marginRight: 20,
+    padding: '4px 8px',
+    borderRadius: 6,
+  },
+  deprecatedTag: {
+    backgroundColor: '#F8E71C',
+    color: '#5D570A',
+    display: 'inline-block',
+    padding: '4px 12px',
+    borderRadius: 6,
+    marginTop: 20,
+  },
+  authRequired: {
+    backgroundColor: '#B8E986',
+    color: '#3B4A2B',
+    padding: '16px 8px',
+    borderRadius: 6,
+    marginTop: 20,
+  },
+  requestUrl: {
+    backgroundColor: '#484848',
+    padding: '16px 8px',
+  },
+  httpMethod: {
+    fontWeight: 'bold',
+    marginRight: 10,
+  },
+  requestBodyTags: {
+    marginBottom: 10,
+  },
+  response: {
+    marginBottom: 30,
+  },
+  responseTag: {
+    display: 'inline-block',
+    borderRadius: 6,
+    color: 'black',
+    padding: '4px 8px',
+    marginBottom: 10,
+  },
+});
 
 export default Operation;

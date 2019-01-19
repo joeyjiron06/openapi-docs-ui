@@ -8,14 +8,14 @@ export const fullOperation = (operationName, overrides) => ({
     {
       tag: { title: '200 OK', color: 'green' },
       headers: {
-        description: `# ${operationName} response header description.`,
+        description: `${operationName} response header description.`,
         content: [
           fullParameter(`${operationName} response header1`),
           fullParameter(`${operationName} response header2`)
         ]
       },
       body: {
-        description: '# This is the description of the response body.',
+        description: 'This is the description of the response body.',
         content: [
           fullParameter(`${operationName} response body param1`),
           fullParameter(`${operationName} response body param2`)
