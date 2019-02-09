@@ -111,6 +111,18 @@ export function schemaPropToParameterTableRow(rawProperty, propName, requiredPro
   };
 }
 
+function getSchema(rawResponse, openapi) {
+  const schema = rawResponse.content
+    && rawResponse.content['application/json']
+    && rawResponse.content['application/json'].schema;
+
+  if (schema && schema.$ref) {
+    return openapi.components.schemas[schema.$ref.split('/').pop()];
+  }
+
+  return schema;
+}
+
 /**
  * @param {OpenApi} openapi  - the openapi spec
  * @param {string} operationName - the name of the operation to convert
@@ -126,10 +138,7 @@ export default (openapi, operationName, httpMethod) => {
     servers: openapi.servers,
     responses: Object.keys(rawOperation.responses).map((responseCode) => {
       const rawResponse = rawOperation.responses[responseCode];
-      const { properties = {}, required } = (rawResponse.content
-          && rawResponse.content['application/json']
-          && rawResponse.content['application/json'].schema)
-        || {};
+      const { properties, required } = getSchema(rawResponse, openapi) || {};
 
       return {
         tag: {
@@ -137,7 +146,7 @@ export default (openapi, operationName, httpMethod) => {
         },
         body: {
           // TODO parse other types besides application/json
-          content: Object.keys(properties).map(propName => schemaPropToParameterTableRow(properties[propName], propName, required)),
+          content: Object.keys(properties || {}).map(propName => schemaPropToParameterTableRow(properties[propName], propName, required)),
         },
       };
     }),

@@ -428,6 +428,76 @@ describe('operationToPropType', () => {
     it.skip('should use the reference properties to fill out the table and combine the inline schemas', () => {});
   });
 
-  it.skip('should convert responses with body refs', () => {});
+  it('should convert responses with body refs', () => {
+    const openapi = {
+      ...minimalOpenapi,
+      paths: {
+        '/pets': {
+          get: {
+            description:
+              'Returns all pets from the system that the user has access to\nNam sed condimentum est. Maecenas tempor sagittis sapien, nec rhoncus sem sagittis sit amet. Aenean at gravida augue, ac iaculis sem. Curabitur odio lorem, ornare eget elementum nec, cursus id lectus. Duis mi turpis, pulvinar ac eros ac, tincidunt varius justo.In hac habitasse platea dictumst. Integer at adipiscing ante, a sagittis ligula. Aenean pharetra tempor ante molestie imperdiet. Vivamus id aliquam diam. Cras quis velit non tortor eleifend sagittis. Praesent at enim pharetra urna volutpat venenatis eget eget mauris. In eleifend fermentum facilisis. Praesent enim enim, gravida ac sodales sed, placerat id erat. Suspendisse lacus dolor, consectetur non augue vel, vehicula interdum libero. Morbi euismod sagittislibero sed lacinia.\n\nSed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condimentum ligula luctus nec. Phasellus semper velit eget aliquet faucibus. In a mattis elit. Phasellus vel urna viverra, condimentum lorem id, rhoncus nibh. Ut pellentesque posuere elementum. Sed a varius odio. Morbi rhoncus ligula libero, vel eleifend nunc tristique vitae. Fusce et sem dui. Aenean nec scelerisque tortor. Fusce malesuada accumsan magna vel tempus. Quisque mollis felis eu dolor tristique, sit amet auctor felis gravida. Sed libero lorem, molestie sed nisl in, accumsan tempor nisi. Fusce sollicitudin massa ut lacinia mattis. Sed vel eleifend lorem. Pellentesque vitae felis pretium, pulvinar elit eu, euismod sapien.\n',
+            responses: {
+              200: {
+                description: 'Updated',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/Dog',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      components: {
+        schemas: {
+          Dog: {
+            type: 'object',
+            properties: {
+              bark: {
+                type: 'boolean',
+              },
+            },
+          },
+        },
+      },
+    };
+
+    expect(operationToPropType(openapi, '/pets', 'get')).toEqual(
+      expect.objectContaining({
+        responses: [
+          expect.objectContaining({
+            body: {
+              content: [
+                {
+                  name: {
+                    titles: [
+                      {
+                        title: 'bark',
+                      },
+                    ],
+                  },
+                  type: {
+                    titles: [
+                      {
+                        title: 'boolean',
+                      },
+                    ],
+                  },
+                  description: {
+                    title: undefined,
+                  },
+                },
+              ],
+            },
+          }),
+        ],
+      }),
+    );
+  });
+
   it.skip('should convert requests with refs', () => {});
+  it.skip('should convert enum to title with subtitles of the values', () => {});
 });

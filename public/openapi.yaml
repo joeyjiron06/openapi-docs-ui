@@ -29,6 +29,10 @@ paths:
       responses:
         '200':
           description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dog'
 components:
   schemas:
     Dog:
