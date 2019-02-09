@@ -110,23 +110,6 @@ export function schemaPropToParameterTableRow(rawProperty, propName, requiredPro
 }
 
 /**
- * @return {PropTypes.ResponseType}
- */
-function repsonseToReponseType(rawResponse, responseCode) {
-  const { properties, required } = rawResponse.content['application/json'].schema;
-
-  return {
-    tag: {
-      title: `${responseCode} OK`,
-    },
-    body: {
-      // TODO parse other types besides application/json
-      content: Object.keys(properties).map(propName => schemaPropToParameterTableRow(properties[propName], propName, required)),
-    },
-  };
-}
-
-/**
  * @param {OpenApi} openapi  - the openapi spec
  * @param {string} operationName - the name of the operation to convert
  * @param {string} httpMethod - the http method to choose within the operation
@@ -140,8 +123,18 @@ export default (openapi, operationName, httpMethod) => {
     httpMethod,
     servers: openapi.servers,
     responses: Object.keys(rawOperation.responses).map((responseCode) => {
-      const response = rawOperation.responses[responseCode];
-      return repsonseToReponseType(response, responseCode);
+      const rawResponse = rawOperation.responses[responseCode];
+      const { properties, required } = rawResponse.content['application/json'].schema;
+
+      return {
+        tag: {
+          title: `${responseCode} OK`,
+        },
+        body: {
+          // TODO parse other types besides application/json
+          content: Object.keys(properties).map(propName => schemaPropToParameterTableRow(properties[propName], propName, required)),
+        },
+      };
     }),
   };
 };

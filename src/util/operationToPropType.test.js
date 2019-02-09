@@ -53,9 +53,8 @@ const minimalOpenapi = {
 
 describe('operationToPropType', () => {
   describe('schemaPropToParameterTableRow', () => {
-    describe('oneOf', () => {});
-    describe('allOf', () => {});
-    describe('anyOf', () => {});
+    describe('$ref', () => {});
+
     describe('object', () => {
       it('should return a red subtitle called "required" when a value is required', () => {
         expect(
@@ -333,6 +332,21 @@ describe('operationToPropType', () => {
         },
       ],
     });
+  });
+
+  it.skip('should map all response codes to an http title', () => {});
+
+  describe('oneOf', () => {
+    it.skip('should throw an error if a $ref is not used for the schema', () => {});
+    it.skip('should render oneOf as a list of links when request body marked as oneOf', () => {});
+  });
+
+  describe('anyOf', () => {
+    it.skip('should throw an unsupported error when anyof is used in request body', () => {});
+  });
+
+  describe('allOf', () => {
+    it.skip('should use the reference properties to fill out the table and combine the inline schemas', () => {});
   });
 
   it.skip('should convert responses with body refs', () => {});
