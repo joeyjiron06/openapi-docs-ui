@@ -1,5 +1,4 @@
-import operationToPropType, { schemaToParameterTypes } from './operationToPropType';
-import { minimalOperation, fullOperation } from '../../fixtures/operations';
+import operationToPropType, { parseParameterType } from './operationToPropType';
 
 const minimalOpenapi = {
   openapi: '3.0.0',
@@ -53,95 +52,96 @@ const minimalOpenapi = {
 };
 
 describe('operationToPropType', () => {
-  describe('schemaToParameterTypes', () => {
+  describe('parseParameterType', () => {
     describe('oneOf', () => {});
     describe('allOf', () => {});
     describe('anyOf', () => {});
-
     describe('object', () => {
-      /*
-        name: {
-          headers: [{title, color}],
-          subtitles: [{title, color}],
-          title: ''
-        },
-        type: ({
-          headers: [{title, color}],
-          subtitles: [{title, color}],
-          titles: [{title, link}]
-        }),
-        description: ''
-
-      */
-
       it('should return a red subtitle called "required" when a value is required', () => {
         expect(
-          schemaToParameterTypes({
-            type: 'object',
-            required: ['age'],
-            properties: {
-              age: {
-                type: 'number',
-                description: 'the age of the pet',
+          parseParameterType(
+            {
+              type: 'number',
+              description: 'the age of the pet',
+            },
+            'age',
+            ['age'],
+          ),
+        ).toEqual({
+          name: {
+            subtitles: [{ title: 'required', color: 'red' }],
+            title: 'age',
+          },
+          type: {
+            titles: [{ title: 'number' }],
+          },
+          description: {
+            title: 'the age of the pet',
+          },
+        });
+      });
+
+      it('should return a link when array of is a schema', () => {
+        expect(
+          parseParameterType(
+            {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/Pet',
               },
             },
+            'details',
+          ),
+        ).toEqual(
+          expect.objectContaining({
+            type: expect.objectContaining({
+              titles: [
+                {
+                  title: 'Pet',
+                  link: '#/components/schemas/Pet',
+                },
+              ],
+            }),
           }),
-        ).toEqual([
-          {
-            name: {
-              subtitles: [{ title: 'required', color: 'red' }],
-              title: 'age',
-            },
-            type: {
-              titles: [{ title: 'number' }],
-            },
-            description: {
-              title: 'the age of the pet',
-            },
-          },
-        ]);
+        );
       });
 
       it('should return a yellow subtitle called "depcreated" when a value is deprecated', () => {
         expect(
-          schemaToParameterTypes({
-            type: 'object',
-            properties: {
-              tricks: {
-                type: 'string',
-                deprecated: true,
-              },
+          parseParameterType(
+            {
+              type: 'string',
+              deprecated: true,
             },
-          }),
-        ).toEqual([
+            'tricks',
+          ),
+        ).toEqual(
           expect.objectContaining({
             name: expect.objectContaining({
               subtitles: [{ title: 'deprecated', color: 'yellow' }],
             }),
           }),
-        ]);
+        );
       });
 
       it.skip('should return a header called "exactly one of" when marked as oneOf and has an inline schema', () => {});
 
       it('should return a header called "exactly one of" when marked as oneOf ', () => {
         expect(
-          schemaToParameterTypes({
-            type: 'object',
-            properties: {
-              pet: {
-                oneOf: [
-                  {
-                    $ref: '#/components/schemas/Cat',
-                  },
-                  {
-                    $ref: '#/components/schemas/Dog',
-                  },
-                ],
-              },
+          parseParameterType(
+            {
+              oneOf: [
+                {
+                  $ref: '#/components/schemas/Cat',
+                },
+                {
+                  $ref: '#/components/schemas/Dog',
+                },
+              ],
             },
-          }),
-        ).toEqual([
+            'pet',
+          ),
+        ).toEqual(
           expect.objectContaining({
             type: expect.objectContaining({
               headers: [
@@ -161,22 +161,20 @@ describe('operationToPropType', () => {
               ],
             }),
           }),
-        ]);
+        );
       });
 
-      it('should return a red header called "NOT" when marked as not', () => {
+      it('should return a red header called "NOT" in type when marked as not', () => {
         expect(
-          schemaToParameterTypes({
-            type: 'object',
-            properties: {
-              pet: {
-                not: {
-                  type: 'integer',
-                },
+          parseParameterType(
+            {
+              not: {
+                type: 'integer',
               },
             },
-          }),
-        ).toEqual([
+            'pet',
+          ),
+        ).toEqual(
           expect.objectContaining({
             type: expect.objectContaining({
               headers: [
@@ -192,20 +190,82 @@ describe('operationToPropType', () => {
               ],
             }),
           }),
-        ]);
+        );
       });
 
-      it.skip('should return a header called "array of" when marked as arrayOf ', () => {});
+      it('should return a header called "array of" in type when type is marked as arrayOf ', () => {
+        expect(
+          parseParameterType(
+            {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+            },
+            'details',
+          ),
+        ).toEqual(
+          expect.objectContaining({
+            type: expect.objectContaining({
+              headers: [
+                {
+                  title: 'array of',
+                },
+              ],
+              titles: [
+                {
+                  title: 'string',
+                },
+              ],
+            }),
+          }),
+        );
+      });
 
-      it.skip('should add the additional properties when aditionalProperties is an object', () => {});
+      it('should add a description when one is defined', () => {
+        expect(
+          parseParameterType(
+            {
+              type: 'string',
+              description: 'the name of the pet',
+            },
+            'name',
+          ),
+        ).toEqual(
+          expect.objectContaining({
+            description: {
+              title: 'the name of the pet',
+            },
+          }),
+        );
+      });
 
-      it.skip('should add the additional properties when aditionalProperties is a reference to a component', () => {});
+      it('should return a subtitle in type when a format is given', () => {
+        expect(
+          parseParameterType(
+            {
+              type: 'integer',
+              format: 'int64',
+            },
+            'id',
+          ),
+        ).toEqual(
+          expect.objectContaining({
+            type: expect.objectContaining({
+              subtitles: [
+                {
+                  title: 'int64',
+                },
+              ],
+            }),
+          }),
+        );
+      });
 
-      it.skip('should add a description when one is defined', () => {});
-
-      it.skip('should return a subtitle in type when a format is given', () => {});
-
+      // TODO LATER
       it.skip('should return a default object when a defalt is given', () => {});
+      it.skip('should add the additional properties when aditionalProperties is an object', () => {});
+      it.skip('should add the additional properties when aditionalProperties is a reference to a component', () => {});
     });
   });
 

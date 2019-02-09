@@ -142,6 +142,10 @@ components:
           type: string
         tag:
           type: string
+        details:
+          type: array
+          items:
+            type: string
 
     Error:
       required:

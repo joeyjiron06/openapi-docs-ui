@@ -1,73 +1,115 @@
-/**
- * @return {PropTypes.ParameterType}
- * */
-export function schemaToParameterTypes(schema) {
-  const rawProperties = schema.properties;
+function parseName({ propName, isRequired, rawProperty }) {
+  const subtitles = [];
 
-  function isRequired(propName) {
-    return Array.isArray(schema.required) && schema.required.includes(propName);
+  if (isRequired) {
+    subtitles.push({
+      title: 'required',
+      color: 'red',
+    });
   }
 
-  return Object.keys(rawProperties).map((propName) => {
-    const rawProperty = rawProperties[propName];
+  if (rawProperty.deprecated) {
+    subtitles.push({ title: 'deprecated', color: 'yellow' });
+  }
 
-    const subtitles = [];
+  return {
+    title: propName,
+    subtitles: subtitles.length ? subtitles : undefined,
+  };
+}
 
-    if (isRequired(propName)) {
-      subtitles.push({
-        title: 'required',
-        color: 'red',
+function parseType(rawProperty) {
+  const typeHeaders = [];
+  const typeTitles = [];
+  const typeSubtitles = [];
+
+  if (Array.isArray(rawProperty.oneOf)) {
+    typeHeaders.push({
+      title: 'exactly one of',
+    });
+
+    rawProperty.oneOf
+      .map(oneOfSchema => ({
+        title: oneOfSchema.$ref.split('/').pop(),
+        link: oneOfSchema.$ref,
+      }))
+      .forEach((title) => {
+        typeTitles.push(title);
       });
-    }
+  } else if (rawProperty.not) {
+    typeHeaders.push({
+      title: 'NOT',
+      color: 'red',
+    });
+    typeTitles.push({
+      title: rawProperty.not.type,
+    });
+  } else if (rawProperty.type === 'array') {
+    typeHeaders.push({
+      title: 'array of',
+    });
 
-    if (rawProperty.deprecated) {
-      subtitles.push({ title: 'deprecated', color: 'yellow' });
-    }
-
-    const typeHeaders = [];
-    const typeTitles = [];
-
-    if (Array.isArray(rawProperty.oneOf)) {
-      typeHeaders.push({
-        title: 'exactly one of',
-      });
-
-      rawProperty.oneOf
-        .map(oneOfSchema => ({
-          title: oneOfSchema.$ref.split('/').pop(),
-          link: oneOfSchema.$ref,
-        }))
-        .forEach((title) => {
-          typeTitles.push(title);
-        });
-    } else if (rawProperty.not) {
-      typeHeaders.push({
-        title: 'NOT',
-        color: 'red',
-      });
+    if (rawProperty.items.$ref) {
+      const paths = rawProperty.items.$ref.split('/');
       typeTitles.push({
-        title: rawProperty.not.type,
+        title: paths[paths.length - 1],
+        link: rawProperty.items.$ref,
       });
     } else {
       typeTitles.push({
-        title: rawProperty.type,
+        title: rawProperty.items.type,
       });
     }
+  } else {
+    typeTitles.push({
+      title: rawProperty.type,
+    });
 
-    return {
-      name: {
-        title: propName,
-        subtitles: subtitles.length ? subtitles : undefined,
-      },
-      type: {
-        headers: typeHeaders.length ? typeHeaders : undefined,
-        titles: typeTitles,
-      },
-      description: {
-        title: rawProperty.description,
-      },
-    };
-  });
+    if (rawProperty.format) {
+      typeSubtitles.push({
+        title: rawProperty.format,
+      });
+    }
+  }
+
+  return {
+    headers: typeHeaders.length ? typeHeaders : undefined,
+    titles: typeTitles,
+    subtitles: typeSubtitles.length ? typeSubtitles : undefined,
+  };
+}
+
+/**
+ *
+ * @param {Object} rawProperty - the raw property from the schema
+ * @param {String} propName - the name of the proptery
+ * @param {Array[String]} requiredProps - array of required props
+ * @return {PropTypes.ParameterType}
+ */
+export function parseParameterType(rawProperty, propName, requiredProps = []) {
+  return {
+    name: parseName({
+      propName,
+      isRequired: requiredProps.includes(propName),
+      rawProperty,
+    }),
+    type: parseType(rawProperty),
+    description: {
+      title: rawProperty.description,
+    },
+  };
+}
+
+/**
+ * @return {PropTypes.ParameterType[]}
+ * */
+export function schemaToParameterTypes({ properties, required }) {
+  // prettier-ignore
+  return Object.keys(properties).map(propName => parseParameterType(
+    properties[propName],
+    propName,
+    required,
+  ));
 }
 
 /**
