@@ -7,53 +7,51 @@ storiesOf('ParameterTable', module).add('default', () => {
   const styles = StyleSheet.create({
     root: {
       minWidth: 700,
-      margin: 10
-    }
+      margin: 10,
+    },
   });
 
   return (
     <ParameterTable
       className={styles.root}
-      parameters={[
+      rows={[
         {
           name: {
-            title: 'email',
+            titles: [{ title: 'email' }],
             subtitles: [
               { title: 'required', color: 'red' },
               {
                 title: 'deprecated',
-                color: 'yellow'
-              }
-            ]
+                color: 'yellow',
+              },
+            ],
           },
           type: {
             subtitles: [{ title: 'email', color: 'default' }],
-            titles: [{ title: 'string' }, { title: 'integer' }]
+            titles: [{ title: 'string' }, { title: 'integer' }],
           },
-          description: 'This is a users email'
+          description: 'This is a users email',
         },
         {
-          name: { title: 'user' },
+          name: {
+            titles: [{ title: 'user' }],
+          },
           type: {
             headers: [{ title: 'array of any of' }],
-            subtitles: [
-              { title: 'email' },
-              { title: 'user' },
-              { title: 'person' }
-            ],
+            subtitles: [{ title: 'email' }, { title: 'user' }, { title: 'person' }],
             titles: [
               {
-                title: 'string'
+                title: 'string',
               },
               {
                 title: 'User',
-                link: '/models/user'
+                link: '/models/user',
               },
               {
                 title: 'Person',
-                link: '/models/person'
-              }
-            ]
+                link: '/models/person',
+              },
+            ],
           },
           description: `
             **User Type**
@@ -62,8 +60,8 @@ storiesOf('ParameterTable', module).add('default', () => {
           `
             .split('\n')
             .map(line => line.trim())
-            .join('\n')
-        }
+            .join('\n'),
+        },
       ]}
     />
   );

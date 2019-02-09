@@ -10,17 +10,15 @@ export const LinkableType = PropTypes.shape({
   link: PropTypes.string,
 });
 
-export const ParameterType = PropTypes.shape({
-  name: PropTypes.shape({
-    headers: PropTypes.arrayOf(ColoredTitleType),
-    subtitles: PropTypes.arrayOf(ColoredTitleType),
-    title: PropTypes.string.isRequired,
-  }).isRequired,
-  type: PropTypes.shape({
-    headers: PropTypes.arrayOf(ColoredTitleType),
-    subtitles: PropTypes.arrayOf(ColoredTitleType),
-    titles: PropTypes.arrayOf(LinkableType).isRequired,
-  }).isRequired,
+export const ParameterTableCell = PropTypes.shape({
+  headers: PropTypes.arrayOf(ColoredTitleType),
+  subtitles: PropTypes.arrayOf(ColoredTitleType),
+  titles: PropTypes.arrayOf(LinkableType).isRequired,
+});
+
+export const ParameterTableRow = PropTypes.shape({
+  name: ParameterTableCell.isRequired,
+  type: ParameterTableCell.isRequired,
   description: PropTypes.string,
 });
 
@@ -28,10 +26,10 @@ export const ResponseType = PropTypes.shape({
   tag: ColoredTitleType.isRequired,
   headers: PropTypes.shape({
     description: PropTypes.string,
-    content: PropTypes.arrayOf(ParameterType),
+    content: PropTypes.arrayOf(ParameterTableRow),
   }),
   body: PropTypes.shape({
     description: PropTypes.string,
-    content: PropTypes.arrayOf(ParameterType),
+    content: PropTypes.arrayOf(ParameterTableRow),
   }).isRequired,
 });

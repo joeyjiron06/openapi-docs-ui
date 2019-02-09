@@ -1,7 +1,7 @@
 import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, css } from 'aphrodite/no-important';
-import { ParameterType, ColoredTitleType, ResponseType } from '../types';
+import { ParameterTableRow, ColoredTitleType, ResponseType } from '../types';
 import Markdown from './markdown';
 import ParameterTable from './parameterTable';
 import theme from '../util/theme';
@@ -63,28 +63,28 @@ class Operation extends Component {
             {operation.parameters.path && (
               <Fragment>
                 <h2>Path Parameters</h2>
-                <ParameterTable parameters={operation.parameters.path} />
+                <ParameterTable rows={operation.parameters.path} />
               </Fragment>
             )}
 
             {operation.parameters.query && (
               <Fragment>
                 <h2>Query Parameters</h2>
-                <ParameterTable parameters={operation.parameters.query} />
+                <ParameterTable rows={operation.parameters.query} />
               </Fragment>
             )}
 
             {operation.parameters.header && (
               <Fragment>
                 <h2>Header Parameters</h2>
-                <ParameterTable parameters={operation.parameters.header} />
+                <ParameterTable rows={operation.parameters.header} />
               </Fragment>
             )}
 
             {operation.parameters.cookie && (
               <Fragment>
                 <h2>Cookie Parameters</h2>
-                <ParameterTable parameters={operation.parameters.cookie} />
+                <ParameterTable rows={operation.parameters.cookie} />
               </Fragment>
             )}
           </Fragment>
@@ -111,7 +111,7 @@ class Operation extends Component {
               </div>
             )}
 
-            <ParameterTable parameters={operation.requestBody.content} />
+            <ParameterTable rows={operation.requestBody.content} />
           </Fragment>
         )}
 
@@ -129,11 +129,11 @@ class Operation extends Component {
 
             <h3>Headers</h3>
             <Markdown text={headers.description} />
-            <ParameterTable parameters={headers.content} />
+            <ParameterTable rows={headers.content} />
 
             <h3>Body</h3>
             <Markdown text={body.description} />
-            <ParameterTable parameters={body.content} />
+            <ParameterTable rows={body.content} />
           </div>
         ))}
       </div>
@@ -161,14 +161,14 @@ Operation.propTypes = {
       tags: PropTypes.arrayOf(ColoredTitleType),
 
       // todo figure out multiple content types
-      content: PropTypes.arrayOf(ParameterType).isRequired,
+      content: PropTypes.arrayOf(ParameterTableRow).isRequired,
     }),
     responses: PropTypes.arrayOf(ResponseType).isRequired,
     parameters: PropTypes.shape({
-      path: PropTypes.arrayOf(ParameterType),
-      query: PropTypes.arrayOf(ParameterType),
-      header: PropTypes.arrayOf(ParameterType),
-      cookie: PropTypes.arrayOf(ParameterType),
+      path: PropTypes.arrayOf(ParameterTableRow),
+      query: PropTypes.arrayOf(ParameterTableRow),
+      header: PropTypes.arrayOf(ParameterTableRow),
+      cookie: PropTypes.arrayOf(ParameterTableRow),
     }),
   }).isRequired,
 };

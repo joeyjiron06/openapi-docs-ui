@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, css } from 'aphrodite/no-important';
-import { ParameterType } from '../types';
+import { ParameterTableRow } from '../types';
 import Markdown from './markdown';
 import theme from '../util/theme';
 
-const ParameterTable = ({ parameters, className }) => (
+const ParameterTable = ({ rows, className }) => (
   <table className={css(styles.root, className)}>
     <thead className={css(styles.head)}>
       <tr>
@@ -15,22 +15,12 @@ const ParameterTable = ({ parameters, className }) => (
       </tr>
     </thead>
     <tbody className={css(styles.body)}>
-      {parameters.map(({ name, type, description }) => (
+      {rows.map(({ name, type, description }) => (
         <tr key={name.title} className={css(styles.tableRow)}>
-          <td className={css(styles.tableData)}>
-            {renderParam({
-              headers: name.headers,
-              subtitles: name.subtitles,
-              titles: [{ title: name.title }],
-            })}
-          </td>
+          <td className={css(styles.tableData)}>{renderTableCell(name)}</td>
 
           <td className={css(styles.tableData)} data-testid="parameter-type">
-            {renderParam({
-              headers: type.headers,
-              subtitles: type.subtitles,
-              titles: type.titles,
-            })}
+            {renderTableCell(type)}
           </td>
 
           <td className={css(styles.tableData)}>
@@ -47,7 +37,7 @@ ParameterTable.defaultProps = {
 };
 
 ParameterTable.propTypes = {
-  parameters: PropTypes.arrayOf(ParameterType).isRequired,
+  rows: PropTypes.arrayOf(ParameterTableRow).isRequired,
   className: PropTypes.string,
 };
 
@@ -95,7 +85,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const renderParam = (
+const renderTableCell = (
   { headers, subtitles, titles }, // eslint-disable-line
 ) => (
   <div className={css(styles.param)}>
