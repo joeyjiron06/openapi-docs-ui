@@ -1,3 +1,5 @@
+import HttpStatusCodes from 'http-status-code';
+
 function parseNameTableCell({ propName, isRequired, rawProperty }) {
   const subtitles = [];
   const titles = [];
@@ -124,11 +126,14 @@ export default (openapi, operationName, httpMethod) => {
     servers: openapi.servers,
     responses: Object.keys(rawOperation.responses).map((responseCode) => {
       const rawResponse = rawOperation.responses[responseCode];
-      const { properties, required } = rawResponse.content['application/json'].schema;
+      const { properties = {}, required } = (rawResponse.content
+          && rawResponse.content['application/json']
+          && rawResponse.content['application/json'].schema)
+        || {};
 
       return {
         tag: {
-          title: `${responseCode} OK`,
+          title: `${responseCode} ${HttpStatusCodes.getMessage(responseCode)}`,
         },
         body: {
           // TODO parse other types besides application/json

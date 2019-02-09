@@ -5,6 +5,7 @@
   "dependencies": {
     "aphrodite": "^2.2.3",
     "commonmark": "^0.28.1",
+    "http-status-code": "^2.1.0",
     "jest-dom": "^3.0.0",
     "js-yaml": "^3.12.0",
     "prop-types": "^15.6.2",
