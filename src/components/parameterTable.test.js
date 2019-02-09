@@ -17,7 +17,7 @@ describe('<ParameterTable />', () => {
 
   it('should render the table headers', () => {
     const parameters = [fullParameter('Table Header Test')];
-    const { getByText } = render(<ParameterTable parameters={parameters} />);
+    const { getByText } = render(<ParameterTable rows={parameters} />);
 
     expect(getByText('Name')).toBeInTheDocument();
     expect(getByText('Type')).toBeInTheDocument();
@@ -27,10 +27,12 @@ describe('<ParameterTable />', () => {
   it('should render the parameters with subtitles and headers', () => {
     const parameters = [fullParameter('param1'), fullParameter('param2'), fullParameter('param3')];
 
-    const { getByText } = render(<ParameterTable parameters={parameters} />);
+    const { getByText } = render(<ParameterTable rows={parameters} />);
 
     parameters.forEach((parameter) => {
-      expect(getByText(parameter.name.title)).toBeInTheDocument();
+      parameter.name.titles.forEach(({ title }) => {
+        expect(getByText(title)).toBeInTheDocument();
+      });
 
       parameter.name.headers.forEach(({ title }) => {
         expect(getByText(title)).toBeInTheDocument();
@@ -57,7 +59,7 @@ describe('<ParameterTable />', () => {
   it('should render a simple text description', () => {
     const parameters = [fullParameter('param1'), fullParameter('param2'), fullParameter('param3')];
 
-    const { getByText } = render(<ParameterTable parameters={parameters} />);
+    const { getByText } = render(<ParameterTable rows={parameters} />);
 
     parameters.forEach((parameter) => {
       expect(getByText(parameter.description)).toBeInTheDocument();
@@ -83,7 +85,7 @@ describe('<ParameterTable />', () => {
       },
     ];
 
-    const { getByText } = render(<ParameterTable parameters={parameters} />);
+    const { getByText } = render(<ParameterTable rows={parameters} />);
 
     expect(getByText('Header1')).toContainHTML('<h1>Header1</h1>');
     expect(getByText('Some text here')).toContainHTML('<p>Some text here</p>');
@@ -95,7 +97,7 @@ describe('<ParameterTable />', () => {
     const param1 = fullParameter('param1');
     const param2 = fullParameter('param2');
     const parameters = [param1, param2];
-    const { getByText } = render(<ParameterTable parameters={parameters} />);
+    const { getByText } = render(<ParameterTable rows={parameters} />);
 
     expect(getByText(param1.type.titles[0].title)).toBeInTheDocument();
     expect(getByText(param1.type.titles[0].title)).toHaveAttribute(

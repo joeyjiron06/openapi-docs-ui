@@ -15,8 +15,8 @@ const ParameterTable = ({ rows, className }) => (
       </tr>
     </thead>
     <tbody className={css(styles.body)}>
-      {rows.map(({ name, type, description }) => (
-        <tr key={name.title} className={css(styles.tableRow)}>
+      {rows.map(({ name, type, description }, index) => (
+        <tr key={description || index} className={css(styles.tableRow)}>
           <td className={css(styles.tableData)}>{renderTableCell(name)}</td>
 
           <td className={css(styles.tableData)} data-testid="parameter-type">

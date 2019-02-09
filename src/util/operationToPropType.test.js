@@ -1,4 +1,4 @@
-import operationToPropType, { parseParameterType } from './operationToPropType';
+import operationToPropType, { schemaPropToParameterTableRow } from './operationToPropType';
 
 const minimalOpenapi = {
   openapi: '3.0.0',
@@ -52,14 +52,14 @@ const minimalOpenapi = {
 };
 
 describe('operationToPropType', () => {
-  describe('parseParameterType', () => {
+  describe('schemaPropToParameterTableRow', () => {
     describe('oneOf', () => {});
     describe('allOf', () => {});
     describe('anyOf', () => {});
     describe('object', () => {
       it('should return a red subtitle called "required" when a value is required', () => {
         expect(
-          parseParameterType(
+          schemaPropToParameterTableRow(
             {
               type: 'number',
               description: 'the age of the pet',
@@ -70,7 +70,7 @@ describe('operationToPropType', () => {
         ).toEqual({
           name: {
             subtitles: [{ title: 'required', color: 'red' }],
-            title: 'age',
+            titles: [{ title: 'age' }],
           },
           type: {
             titles: [{ title: 'number' }],
@@ -83,7 +83,7 @@ describe('operationToPropType', () => {
 
       it('should return a link when array of is a schema', () => {
         expect(
-          parseParameterType(
+          schemaPropToParameterTableRow(
             {
               type: 'array',
               items: {
@@ -108,7 +108,7 @@ describe('operationToPropType', () => {
 
       it('should return a yellow subtitle called "depcreated" when a value is deprecated', () => {
         expect(
-          parseParameterType(
+          schemaPropToParameterTableRow(
             {
               type: 'string',
               deprecated: true,
@@ -124,11 +124,44 @@ describe('operationToPropType', () => {
         );
       });
 
-      it.skip('should return a header called "exactly one of" when marked as oneOf and has an inline schema', () => {});
+      it('should throw an error when marked as oneOf and has an inline schema', () => {
+        expect(() => schemaPropToParameterTableRow(
+          {
+            oneOf: [
+              {
+                $ref: '#/components/schemas/Dog',
+              },
+              {
+                type: 'object',
+                properties: {
+                  firstName: {
+                    type: 'string',
+                    description: 'the name of the pet',
+                  },
+                },
+              },
+              {
+                type: 'object',
+                properties: {
+                  lastName: {
+                    type: 'string',
+                    description: 'the last name of the pet',
+                  },
+                },
+              },
+              {
+                type: 'string',
+                description: 'some string',
+              },
+            ],
+          },
+          'pet',
+        )).toThrow();
+      });
 
       it('should return a header called "exactly one of" when marked as oneOf ', () => {
         expect(
-          parseParameterType(
+          schemaPropToParameterTableRow(
             {
               oneOf: [
                 {
@@ -166,7 +199,7 @@ describe('operationToPropType', () => {
 
       it('should return a red header called "NOT" in type when marked as not', () => {
         expect(
-          parseParameterType(
+          schemaPropToParameterTableRow(
             {
               not: {
                 type: 'integer',
@@ -195,7 +228,7 @@ describe('operationToPropType', () => {
 
       it('should return a header called "array of" in type when type is marked as arrayOf ', () => {
         expect(
-          parseParameterType(
+          schemaPropToParameterTableRow(
             {
               type: 'array',
               items: {
@@ -224,7 +257,7 @@ describe('operationToPropType', () => {
 
       it('should add a description when one is defined', () => {
         expect(
-          parseParameterType(
+          schemaPropToParameterTableRow(
             {
               type: 'string',
               description: 'the name of the pet',
@@ -242,7 +275,7 @@ describe('operationToPropType', () => {
 
       it('should return a subtitle in type when a format is given', () => {
         expect(
-          parseParameterType(
+          schemaPropToParameterTableRow(
             {
               type: 'integer',
               format: 'int64',
@@ -286,7 +319,7 @@ describe('operationToPropType', () => {
             content: [
               {
                 name: {
-                  title: 'firstName',
+                  titles: [{ title: 'firstName' }],
                 },
                 type: {
                   titles: [{ title: 'string' }],

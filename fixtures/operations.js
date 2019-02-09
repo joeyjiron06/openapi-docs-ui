@@ -81,7 +81,7 @@ export const minimalOperation = overrides => ({
         content: [
           {
             name: {
-              title: 'bearerTokenInResponseHeader',
+              titles: [{ title: 'bearerTokenInResponseHeader' }],
             },
             type: {
               titles: [{ title: 'stringInResponseHeader' }],
@@ -93,7 +93,7 @@ export const minimalOperation = overrides => ({
         content: [
           {
             name: {
-              title: 'userEmailNameInBody',
+              titles: [{ title: 'userEmailNameInBody' }],
             },
             type: {
               titles: [{ title: 'userEmailTypeInBody' }],

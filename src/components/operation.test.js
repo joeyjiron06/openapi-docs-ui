@@ -107,7 +107,6 @@ describe('<Operation />', () => {
       `${operation.httpMethod}${servers[1].url}`,
     );
   });
-  // TODO add test when path is also given
 
   it('should render the path parameters', () => {
     const operation = fullOperation('Path Params Test');
@@ -115,7 +114,7 @@ describe('<Operation />', () => {
 
     expect(getByText('Path Parameters')).toBeInTheDocument();
     operation.parameters.path.forEach(({ name, description }) => {
-      expect(getByText(name.title)).toBeInTheDocument();
+      expect(getByText(name.titles[0].title)).toBeInTheDocument();
       expect(getByText(description)).toBeInTheDocument();
     });
   });
@@ -126,7 +125,7 @@ describe('<Operation />', () => {
 
     expect(getByText('Query Parameters')).toBeInTheDocument();
     operation.parameters.query.forEach(({ name, description }) => {
-      expect(getByText(name.title)).toBeInTheDocument();
+      expect(getByText(name.titles[0].title)).toBeInTheDocument();
       expect(getByText(description)).toBeInTheDocument();
     });
   });
@@ -137,7 +136,7 @@ describe('<Operation />', () => {
 
     expect(getByText('Header Parameters')).toBeInTheDocument();
     operation.parameters.header.forEach(({ name, description }) => {
-      expect(getByText(name.title)).toBeInTheDocument();
+      expect(getByText(name.titles[0].title)).toBeInTheDocument();
       expect(getByText(description)).toBeInTheDocument();
     });
   });
@@ -148,7 +147,7 @@ describe('<Operation />', () => {
 
     expect(getByText('Cookie Parameters')).toBeInTheDocument();
     operation.parameters.cookie.forEach(({ name, description }) => {
-      expect(getByText(name.title)).toBeInTheDocument();
+      expect(getByText(name.titles[0].title)).toBeInTheDocument();
       expect(getByText(description)).toBeInTheDocument();
     });
   });
@@ -160,7 +159,7 @@ describe('<Operation />', () => {
     expect(getByText('Request Body')).toBeInTheDocument();
     expect(getByText(operation.requestBody.description)).toBeInTheDocument();
     operation.requestBody.content.forEach(({ name, description }) => {
-      expect(getByText(name.title)).toBeInTheDocument();
+      expect(getByText(name.titles[0].title)).toBeInTheDocument();
       expect(getByText(description)).toBeInTheDocument();
     });
     operation.requestBody.tags.forEach(({ title }) => {
@@ -233,7 +232,7 @@ describe('<Operation />', () => {
       expect(getByText(headers.description)).toBeInTheDocument();
 
       headers.content.forEach(({ name, type, description }) => {
-        expect(getByText(name.title)).toBeInTheDocument();
+        expect(getByText(name.titles[0].title)).toBeInTheDocument();
         expect(getByText(description)).toBeInTheDocument();
 
         type.titles.forEach(({ title }) => {
@@ -245,7 +244,7 @@ describe('<Operation />', () => {
       expect(getByText(body.description)).toBeInTheDocument();
 
       body.content.forEach(({ name, type, description }) => {
-        expect(getByText(name.title)).toBeInTheDocument();
+        expect(getByText(name.titles[0].title)).toBeInTheDocument();
         expect(getByText(description)).toBeInTheDocument();
 
         type.titles.forEach(({ title }) => {

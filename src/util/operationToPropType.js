@@ -1,5 +1,10 @@
-function parseName({ propName, isRequired, rawProperty }) {
+function parseNameTableCell({ propName, isRequired, rawProperty }) {
   const subtitles = [];
+  const titles = [];
+
+  titles.push({
+    title: propName,
+  });
 
   if (isRequired) {
     subtitles.push({
@@ -13,12 +18,12 @@ function parseName({ propName, isRequired, rawProperty }) {
   }
 
   return {
-    title: propName,
+    titles,
     subtitles: subtitles.length ? subtitles : undefined,
   };
 }
 
-function parseType(rawProperty) {
+function parseTypeTableCell(rawProperty) {
   const typeHeaders = [];
   const typeTitles = [];
   const typeSubtitles = [];
@@ -28,14 +33,18 @@ function parseType(rawProperty) {
       title: 'exactly one of',
     });
 
-    rawProperty.oneOf
-      .map(oneOfSchema => ({
-        title: oneOfSchema.$ref.split('/').pop(),
-        link: oneOfSchema.$ref,
-      }))
-      .forEach((title) => {
-        typeTitles.push(title);
-      });
+    rawProperty.oneOf.forEach((oneOfSchema) => {
+      if (oneOfSchema.$ref) {
+        typeTitles.push({
+          title: oneOfSchema.$ref.split('/').pop(),
+          link: oneOfSchema.$ref,
+        });
+      } else {
+        throw new TypeError(
+          'inline schemas for used with "oneOf" is not currently supported. Please use component references only with "oneOf"',
+        );
+      }
+    });
   } else if (rawProperty.not) {
     typeHeaders.push({
       title: 'NOT',
@@ -84,16 +93,16 @@ function parseType(rawProperty) {
  * @param {Object} rawProperty - the raw property from the schema
  * @param {String} propName - the name of the proptery
  * @param {Array[String]} requiredProps - array of required props
- * @return {PropTypes.ParameterType}
+ * @return {PropTypes.ParameterTableRow}
  */
-export function parseParameterType(rawProperty, propName, requiredProps = []) {
+export function schemaPropToParameterTableRow(rawProperty, propName, requiredProps = []) {
   return {
-    name: parseName({
+    name: parseNameTableCell({
       propName,
       isRequired: requiredProps.includes(propName),
       rawProperty,
     }),
-    type: parseType(rawProperty),
+    type: parseTypeTableCell(rawProperty),
     description: {
       title: rawProperty.description,
     },
@@ -101,28 +110,18 @@ export function parseParameterType(rawProperty, propName, requiredProps = []) {
 }
 
 /**
- * @return {PropTypes.ParameterType[]}
- * */
-export function schemaToParameterTypes({ properties, required }) {
-  // prettier-ignore
-  return Object.keys(properties).map(propName => parseParameterType(
-    properties[propName],
-    propName,
-    required,
-  ));
-}
-
-/**
  * @return {PropTypes.ResponseType}
  */
 function repsonseToReponseType(rawResponse, responseCode) {
+  const { properties, required } = rawResponse.content['application/json'].schema;
+
   return {
     tag: {
       title: `${responseCode} OK`,
     },
     body: {
       // TODO parse other types besides application/json
-      content: schemaToParameterTypes(rawResponse.content['application/json'].schema),
+      content: Object.keys(properties).map(propName => schemaPropToParameterTableRow(properties[propName], propName, required)),
     },
   };
 }
