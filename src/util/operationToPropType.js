@@ -1,4 +1,4 @@
-import HttpStatusCodes from 'http-status-code';
+import getHttpMessage from './httpStatusCodes';
 
 function parseNameTableCell({ propName, isRequired, rawProperty }) {
   const subtitles = [];
@@ -105,9 +105,7 @@ export function schemaPropToParameterTableRow(rawProperty, propName, requiredPro
       rawProperty,
     }),
     type: parseTypeTableCell(rawProperty),
-    description: {
-      title: rawProperty.description,
-    },
+    description: rawProperty.description,
   };
 }
 
@@ -142,7 +140,7 @@ export default (openapi, operationName, httpMethod) => {
 
       return {
         tag: {
-          title: `${responseCode} ${HttpStatusCodes.getMessage(responseCode)}`,
+          title: `${responseCode} ${getHttpMessage(responseCode)}`,
         },
         body: {
           // TODO parse other types besides application/json

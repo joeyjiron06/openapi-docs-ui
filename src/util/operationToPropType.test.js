@@ -1,4 +1,4 @@
-import HttpStatusCodes from 'http-status-code';
+import getHttpMessage from './httpStatusCodes';
 import operationToPropType, { schemaPropToParameterTableRow } from './operationToPropType';
 
 const minimalOpenapi = {
@@ -75,9 +75,7 @@ describe('operationToPropType', () => {
           type: {
             titles: [{ title: 'number' }],
           },
-          description: {
-            title: 'the age of the pet',
-          },
+          description: 'the age of the pet',
         });
       });
 
@@ -266,9 +264,7 @@ describe('operationToPropType', () => {
           ),
         ).toEqual(
           expect.objectContaining({
-            description: {
-              title: 'the name of the pet',
-            },
+            description: 'the name of the pet',
           }),
         );
       });
@@ -324,9 +320,7 @@ describe('operationToPropType', () => {
                 type: {
                   titles: [{ title: 'string' }],
                 },
-                description: {
-                  title: 'the name of the pet',
-                },
+                description: 'the name of the pet',
               },
             ],
           },
@@ -406,7 +400,7 @@ describe('operationToPropType', () => {
           responses: [
             expect.objectContaining({
               tag: {
-                title: `${responseCode} ${HttpStatusCodes.getMessage(responseCode)}`,
+                title: `${responseCode} ${getHttpMessage(responseCode)}`,
               },
             }),
           ],
@@ -486,9 +480,7 @@ describe('operationToPropType', () => {
                       },
                     ],
                   },
-                  description: {
-                    title: undefined,
-                  },
+                  description: undefined,
                 },
               ],
             },

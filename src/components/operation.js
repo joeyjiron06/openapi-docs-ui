@@ -127,9 +127,14 @@ class Operation extends Component {
               {tag.title}
             </div>
 
-            <h3>Headers</h3>
-            <Markdown text={headers.description} />
-            <ParameterTable rows={headers.content} />
+            {/* TODO add tests */}
+            {headers && (
+              <Fragment>
+                <h3>Headers</h3>
+                <Markdown text={headers.description} />
+                <ParameterTable rows={headers.content} />
+              </Fragment>
+            )}
 
             <h3>Body</h3>
             <Markdown text={body.description} />
@@ -202,10 +207,12 @@ const styles = StyleSheet.create({
   requestUrl: {
     backgroundColor: '#484848',
     padding: '16px 8px',
+    borderRadius: 6,
   },
   httpMethod: {
     fontWeight: 'bold',
     marginRight: 10,
+    textTransform: 'uppercase',
   },
   requestBodyTags: {
     marginBottom: 10,

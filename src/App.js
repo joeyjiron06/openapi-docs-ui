@@ -1,27 +1,31 @@
 import React, { Component } from 'react';
 import { StyleSheet, css } from 'aphrodite';
+import jsYaml from 'js-yaml';
+import opertationToPropType from './util/operationToPropType';
+import Operation from './components/operation';
 
 class App extends Component {
+  state = {
+    operation: null,
+  };
+
+  async componentDidMount() {
+    const response = await fetch('/openapi-with-required.yaml');
+    const openApiText = await response.text();
+    const openapiJson = jsYaml.safeLoad(openApiText);
+    const firstPathName = Object.keys(openapiJson.paths)[0];
+    const operation = opertationToPropType(openapiJson, firstPathName, 'get');
+    this.setState({
+      operation,
+    });
+  }
+
   render() {
+    const { operation } = this.state;
     return (
       <div className={css(styles.app)}>
-        <header className="App-header">
-          <p>
-            Edit
-            {' '}
-            <code>src/App.js</code>
-            {' '}
-and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        {!operation && <div>Loading...</div>}
+        {operation && <Operation operation={operation} />}
       </div>
     );
   }
@@ -29,7 +33,8 @@ and save to reload.
 
 const styles = StyleSheet.create({
   app: {
-    background: 'red',
+    maxWidth: 700,
+    margin: 'auto',
   },
 });
 
