@@ -490,6 +490,59 @@ describe('operationToPropType', () => {
     );
   });
 
-  it.skip('should convert requests with refs', () => {});
+  it('should convert requests with refs', () => {
+    const openapi = {
+      ...minimalOpenapi,
+      paths: {
+        '/pets': {
+          post: {
+            description: 'Returns all ',
+            responses: {},
+            requestBody: {
+              description: 'Pet to add to the store',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/Dog',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      components: {
+        schemas: {
+          Dog: {
+            type: 'object',
+            properties: {
+              bark: {
+                type: 'boolean',
+              },
+            },
+          },
+        },
+      },
+    };
+
+    expect(operationToPropType(openapi, '/pets', 'post')).toEqual(
+      expect.objectContaining({
+        requestBody: {
+          description: 'Pet to add to the store',
+          content: [
+            {
+              name: {
+                titles: [{ title: 'bark' }],
+              },
+              type: {
+                titles: [{ title: 'boolean' }],
+              },
+              description: undefined,
+            },
+          ],
+        },
+      }),
+    );
+  });
   it.skip('should convert enum to title with subtitles of the values', () => {});
 });

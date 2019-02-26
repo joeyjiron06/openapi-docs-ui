@@ -109,16 +109,21 @@ export function schemaPropToParameterTableRow(rawProperty, propName, requiredPro
   };
 }
 
-function getSchema(rawResponse, openapi) {
-  const schema = rawResponse.content
-    && rawResponse.content['application/json']
-    && rawResponse.content['application/json'].schema;
+function getSchema(mediaType, openapi) {
+  const schema = mediaType.content
+    && mediaType.content['application/json']
+    && mediaType.content['application/json'].schema;
 
   if (schema && schema.$ref) {
     return openapi.components.schemas[schema.$ref.split('/').pop()];
   }
 
   return schema;
+}
+
+function mediaTypeToContent(mediaType, openapi) {
+  const { properties, required } = getSchema(mediaType, openapi) || {};
+  return Object.keys(properties || {}).map(propName => schemaPropToParameterTableRow(properties[propName], propName, required));
 }
 
 /**
@@ -134,17 +139,20 @@ export default (openapi, operationName, httpMethod) => {
     title: `${httpMethod.toUpperCase()} ${operationName}`,
     httpMethod,
     servers: openapi.servers,
+    requestBody: rawOperation.requestBody && {
+      description: rawOperation.requestBody.description,
+      content: mediaTypeToContent(rawOperation.requestBody, openapi),
+    },
+
     responses: Object.keys(rawOperation.responses).map((responseCode) => {
       const rawResponse = rawOperation.responses[responseCode];
-      const { properties, required } = getSchema(rawResponse, openapi) || {};
 
       return {
         tag: {
           title: `${responseCode} ${getHttpMessage(responseCode)}`,
         },
         body: {
-          // TODO parse other types besides application/json
-          content: Object.keys(properties || {}).map(propName => schemaPropToParameterTableRow(properties[propName], propName, required)),
+          content: mediaTypeToContent(rawResponse, openapi),
         },
       };
     }),
