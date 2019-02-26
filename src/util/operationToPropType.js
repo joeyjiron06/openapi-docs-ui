@@ -140,6 +140,9 @@ export default (openapi, operationName, httpMethod) => {
     httpMethod,
     servers: openapi.servers,
     requestBody: rawOperation.requestBody && {
+      tags: rawOperation.requestBody.required && [
+        { title: 'Request body is required', color: 'red' },
+      ],
       description: rawOperation.requestBody.description,
       content: mediaTypeToContent(rawOperation.requestBody, openapi),
     },

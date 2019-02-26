@@ -500,6 +500,7 @@ describe('operationToPropType', () => {
             responses: {},
             requestBody: {
               description: 'Pet to add to the store',
+              required: true,
               content: {
                 'application/json': {
                   schema: {
@@ -529,6 +530,7 @@ describe('operationToPropType', () => {
       expect.objectContaining({
         requestBody: {
           description: 'Pet to add to the store',
+          tags: [{ title: 'Request body is required', color: 'red' }],
           content: [
             {
               name: {
