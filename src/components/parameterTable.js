@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { StyleSheet, css } from 'aphrodite/no-important';
 import { ParameterTableRow } from '../types';
 import Markdown from './markdown';
-import theme from '../util/theme';
+import theme from '../parsers/theme';
 
 const ParameterTable = ({ rows, className }) => (
   <table className={css(styles.root, className)}>

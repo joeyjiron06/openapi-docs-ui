@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import jsYaml from 'js-yaml';
-import opertationToPropType from './util/operationToPropType';
+import parseOperataion from './util/parseOperation';
 import Operation from './components/operation';
 
 class App extends Component {
@@ -14,7 +14,7 @@ class App extends Component {
     const openApiText = await response.text();
     const openapiJson = jsYaml.safeLoad(openApiText);
     const firstPathName = Object.keys(openapiJson.paths)[0];
-    const operation = opertationToPropType(openapiJson, firstPathName, 'get');
+    const operation = parseOperataion(openapiJson, firstPathName, 'get');
     this.setState({
       operation,
     });

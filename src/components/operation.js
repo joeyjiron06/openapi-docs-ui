@@ -4,7 +4,7 @@ import { StyleSheet, css } from 'aphrodite/no-important';
 import { ParameterTableRow, ColoredTitleType, ResponseType } from '../types';
 import Markdown from './markdown';
 import ParameterTable from './parameterTable';
-import theme from '../util/theme';
+import theme from '../parsers/theme';
 
 class Operation extends Component {
   state = {

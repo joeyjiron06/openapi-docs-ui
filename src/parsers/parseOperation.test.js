@@ -1,5 +1,5 @@
 import getHttpMessage from './httpStatusCodes';
-import operationToPropType, { schemaPropToParameterTableRow } from './operationToPropType';
+import parseOperation, { schemaPropToParameterTableRow } from './parseOperation';
 
 const minimalOpenapi = {
   openapi: '3.0.0',
@@ -52,7 +52,7 @@ const minimalOpenapi = {
   },
 };
 
-describe('operationToPropType', () => {
+describe('parseOperation', () => {
   describe('schemaPropToParameterTableRow', () => {
     describe('$ref', () => {});
 
@@ -299,7 +299,7 @@ describe('operationToPropType', () => {
   });
 
   it('should convert a minimal operation to an Opertaions propType', () => {
-    expect(operationToPropType(minimalOpenapi, '/pets', 'get')).toEqual({
+    expect(parseOperation(minimalOpenapi, '/pets', 'get')).toEqual({
       title: 'GET /pets',
       httpMethod: 'get',
       servers: [
@@ -395,7 +395,7 @@ describe('operationToPropType', () => {
         },
       };
 
-      expect(operationToPropType(openapi, '/pets', 'get')).toEqual(
+      expect(parseOperation(openapi, '/pets', 'get')).toEqual(
         expect.objectContaining({
           responses: [
             expect.objectContaining({
@@ -459,7 +459,7 @@ describe('operationToPropType', () => {
       },
     };
 
-    expect(operationToPropType(openapi, '/pets', 'get')).toEqual(
+    expect(parseOperation(openapi, '/pets', 'get')).toEqual(
       expect.objectContaining({
         responses: [
           expect.objectContaining({
@@ -526,7 +526,7 @@ describe('operationToPropType', () => {
       },
     };
 
-    expect(operationToPropType(openapi, '/pets', 'post')).toEqual(
+    expect(parseOperation(openapi, '/pets', 'post')).toEqual(
       expect.objectContaining({
         requestBody: {
           description: 'Pet to add to the store',
